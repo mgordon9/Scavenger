@@ -16,6 +16,9 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -65,14 +68,19 @@ public class MainActivity extends AppCompatActivity
         mCriteria = new Criteria();
         mProvider = mLocationManager.getBestProvider(mCriteria, true);
 
-//        View bottomButton = findViewById(R.id.objectives);
-//        bottomButton.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                FragmentManager fragmentManager = getFragmentManager();
-//                fragmentManager.putFragment(savedInstanceState, "ListFragment", new ObjectivesFragment());
-//            }
-//        });
+        TextView bottomButton = (TextView)findViewById(R.id.objectives);
+        bottomButton.setClickable(true);
+        bottomButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Toast.makeText(MainActivity.this, "This is when the list will pop up from the bottom", Toast.LENGTH_SHORT).show();
+//                final FragmentTransaction ft = getFragmentManager().beginTransaction();
+//                ft.replace(R.id.main_layout, new ObjectivesFragment(), "ListFrag");
+//                ft.addToBackStack(null);
+//                ft.commit();
+//                getFragmentManager().executePendingTransactions();
+            }
+        });
     }
 
     private void startMap() {

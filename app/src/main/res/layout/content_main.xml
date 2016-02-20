@@ -5,7 +5,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context="com.project.ece150.scavenger.MainActivity"
-    tools:showIn="@layout/app_bar_main">
+    tools:showIn="@layout/app_bar_main"
+    android:id="@+id/main_layout">
 
     <Space
         android:id="@+id/space"
@@ -33,7 +34,6 @@
         android:gravity="center"
         android:padding="@dimen/fab_margin2"
         android:text="Find Objectives Near You"
-        android:textColor="@android:color/white"
-        android:clickable="true" />
+        android:textColor="@android:color/white" />
 
 </RelativeLayout>
