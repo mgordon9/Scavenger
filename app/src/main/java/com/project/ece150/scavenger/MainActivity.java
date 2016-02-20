@@ -40,7 +40,7 @@ public class MainActivity extends AppCompatActivity
 
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -60,13 +60,22 @@ public class MainActivity extends AppCompatActivity
         } else {
             startMap();
         }
-    }
 
-    private void startMap() {
         mLocationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
         mCriteria = new Criteria();
         mProvider = mLocationManager.getBestProvider(mCriteria, true);
 
+//        View bottomButton = findViewById(R.id.objectives);
+//        bottomButton.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                FragmentManager fragmentManager = getFragmentManager();
+//                fragmentManager.putFragment(savedInstanceState, "ListFragment", new ObjectivesFragment());
+//            }
+//        });
+    }
+
+    private void startMap() {
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
@@ -125,7 +134,7 @@ public class MainActivity extends AppCompatActivity
         LatLng currentPos = new LatLng(location.getLatitude(), location.getLongitude());
         //mMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
         mMap.moveCamera(CameraUpdateFactory.newLatLng(currentPos));
-        mMap.animateCamera( CameraUpdateFactory.zoomTo( 20.0f ) );
+        mMap.animateCamera(CameraUpdateFactory.zoomTo(16.0f));
 
         mMap.setOnMyLocationButtonClickListener(this);
         mUiSettings = mMap.getUiSettings();
