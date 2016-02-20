@@ -2,6 +2,9 @@ package com.project.ece150.scavenger;
 
 import android.Manifest;
 import android.content.pm.PackageManager;
+import android.location.Criteria;
+import android.location.Location;
+import android.location.LocationManager;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
@@ -20,7 +23,6 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.UiSettings;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.MarkerOptions;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener,
@@ -29,9 +31,13 @@ public class MainActivity extends AppCompatActivity
 
     private static final int MY_LOCATION_PERMISSION_REQUEST_CODE = 1;
 
-
     private GoogleMap mMap;
     private UiSettings mUiSettings;
+
+    LocationManager mLocationManager;
+    Criteria mCriteria;
+    String mProvider;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,6 +63,10 @@ public class MainActivity extends AppCompatActivity
     }
 
     private void startMap() {
+        mLocationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
+        mCriteria = new Criteria();
+        mProvider = mLocationManager.getBestProvider(mCriteria, true);
+
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
@@ -110,13 +120,15 @@ public class MainActivity extends AppCompatActivity
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
 
-        // Add a marker in Sydney and move the camera
-        LatLng sydney = new LatLng(-34, 151);
-        mMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
+        Location location = mLocationManager.getLastKnownLocation(mProvider);
+
+        LatLng currentPos = new LatLng(location.getLatitude(), location.getLongitude());
+        //mMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
+        mMap.moveCamera(CameraUpdateFactory.newLatLng(currentPos));
+        mMap.animateCamera( CameraUpdateFactory.zoomTo( 20.0f ) );
+
         mMap.setOnMyLocationButtonClickListener(this);
         mUiSettings = mMap.getUiSettings();
-//        mUiSettings.setMyLocationButtonEnabled(true);
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION}, MY_LOCATION_PERMISSION_REQUEST_CODE);
         } else {
