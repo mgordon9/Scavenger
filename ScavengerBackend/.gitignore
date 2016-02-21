@@ -1,0 +1,18 @@
+# Build/Generated files #
+#########################
+
+base_project/aedemo/target
+
+# user specific files #
+#######################
+
+#vim
+*.swp
+*.swo
+
+#intelliJ
+base_project/aedemo/.idea/
+*.iml
+
+#MacOS
+.DS_STORE
