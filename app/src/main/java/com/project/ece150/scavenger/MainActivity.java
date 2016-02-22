@@ -26,6 +26,7 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.UiSettings;
 import com.google.android.gms.maps.model.LatLng;
+import com.project.ece150.scavenger.remote.ObjectivesClient;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener,
@@ -67,6 +68,10 @@ public class MainActivity extends AppCompatActivity
         mLocationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
         mCriteria = new Criteria();
         mProvider = mLocationManager.getBestProvider(mCriteria, true);
+
+        //Backend
+        ObjectivesClient client = new ObjectivesClient("http://scavenger-game.appspot.com/rest/ds");
+        client.initDataRequest();
 
         TextView bottomButton = (TextView)findViewById(R.id.objectives);
         bottomButton.setClickable(true);
