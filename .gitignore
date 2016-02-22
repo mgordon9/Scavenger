@@ -34,7 +34,7 @@ captures/
 
 # Intellij
 *.iml
-
+.idea/
 
 # App Engine specific files #
 #############################
@@ -49,8 +49,7 @@ captures/
 *.swo
 
 #intelliJ
-base_project/aedemo/.idea/
-.idea/
+ScavengerBackend/AppEngine/base_project/aedemo/.idea/
 *.iml
 
 #MacOS
