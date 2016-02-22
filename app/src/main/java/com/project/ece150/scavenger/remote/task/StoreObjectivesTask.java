@@ -47,12 +47,16 @@ public class StoreObjectivesTask extends AsyncTask<String, String, Integer> {
             urlConnection.setDoOutput(true);
 
             Uri.Builder builder = new Uri.Builder()
-                    .appendQueryParameter("firstParam", "")
-                    .appendQueryParameter("secondParam", paramValue2)
-                    .appendQueryParameter("thirdParam", paramValue3);
+                    .appendQueryParameter("title", _objective.getTitle())
+                    .appendQueryParameter("info", _objective.getInfo())
+                    .appendQueryParameter("latitude", String.valueOf(_objective.getLatitude()))
+                    .appendQueryParameter("longitude", String.valueOf(_objective.getLongitude()))
+                    .appendQueryParameter("owner", _objective.getOwner())
+                    .appendQueryParameter("otherConfirmedUsers", "<tbd>")
+                    .appendQueryParameter("activity", "tutoring");
             String query = builder.build().getEncodedQuery();
 
-            OutputStream os = conn.getOutputStream();
+            OutputStream os = urlConnection.getOutputStream();
             BufferedWriter writer = new BufferedWriter(
                     new OutputStreamWriter(os, "UTF-8"));
             writer.write(query);
@@ -60,10 +64,7 @@ public class StoreObjectivesTask extends AsyncTask<String, String, Integer> {
             writer.close();
             os.close();
 
-            conn.connect();
-
-
-            int responseCode = urlConnection.getResponseCode();
+            urlConnection.connect();
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
