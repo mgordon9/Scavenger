@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <link rel="icon" href="img/favicon.ico">
+
+    <title>HelpMap!</title>
+
+    <!-- Bootstrap core CSS -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Carousel CSS -->
+    <link href="css/carousel.css" rel="stylesheet">
+</head>
+
+<!-- Carousel -->
+<!-- -------- -->
+<div ng-app="HelpMap" id="myCarousel" class="carousel slide" data-ride="carousel" data-interval=false>
+    <!-- Indicators -->
+    <ol class="carousel-indicators">
+        <li data-target="#myCarousel" data-slide-to="0" class="active"></li>
+        <li data-target="#myCarousel" data-slide-to="1"></li>
+    </ol>
+    <div class="carousel-inner" role="listbox">
+        <!-- Map View -->
+        <div class="item active">
+            <img class="first-slide" src="data:image/gif;base64,R0lGODlhAQABAIAAAHd3dwAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" alt="First slide">
+            <div class="container">
+                <div class="carousel-caption">
+                    <h1>Map View</h1>
+                </div>
+
+                <div ng-controller="MapViewController">
+                    <div id="map"></div>
+                    <div id="class" ng-repeat="marker in markers | orderBy : 'title'">
+                        <a href="#" ng-click="openInfoWindow($event, marker)">{{marker.title}}</a>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- Seek View -->
+        <div class="item">
+            <div ng-controller="SeekViewController as seekCtrl">
+                <form class="form-horizontal">
+                    <fieldset>
+
+                        <!-- Headline text-->
+                        <h1 style="text-align: center;">Submit a Request.</h1>
+
+                        <!-- Name group -->
+                        <div class="form-group">
+                            <label class="col-md-4 control-label" for="tiName">Name</label>
+                            <div class="col-md-4">
+                                <input id="tiName" name="tiName" type="text" placeholder="John Doe" class="form-control input-md" ng-model="myForm.name" required>
+
+                            </div>
+                        </div>
+
+                        <!-- Type selection group -->
+                        <div class="form-group">
+                            <label class="col-md-4 control-label" for="selType">Type</label>
+                            <div class="col-md-4">
+                                <select id="selType" name="selType" class="form-control" ng-model="helpItems.selectedItem" required>
+                                    <option ng-repeat="item in helpItems.availableItems" value="{{item.name}}" >{{item.description}}</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- Description group -->
+                        <div class="form-group">
+                            <label class="col-md-4 control-label" for="tiDescription">Description</label>
+                            <div class="col-md-4">
+                                <input id="tiDescription" name="tiDescription" type="text" placeholder="Please provide a description." class="form-control input-md" ng-model="seekCtrl.description">
+
+                            </div>
+                        </div>
+
+                        <!-- Objective group -->
+                        <div class="form-group">
+                            <label class="col-md-4 control-label" for="location">Location</label>
+                            <div id="location" class="col-md-4">
+                                <!-- MiniMap-->
+                                <div id="minimap" style="width:100%; height:300px;"></div>
+                                <div id="floating-panel">
+                                    <button id="btnDropPin" name="btnDropPin" class="btn btn-danger" style="display: block; width: 100%;" ng-click="myForm.onDropPinBtnClicked($event)">Drop Pin</button>
+                                </div>
+
+                                <!-- Coordinates Text input -->
+                                <input name="tiLatitude" type="text" placeholder="Latitude" class="form-control input-md" ng-model="myForm.latitude" required>
+                                <input name="tiLongitude" type="text" placeholder="Longitude" class="form-control input-md" ng-model="myForm.longitude" required>
+                            </div>
+                        </div>
+
+                        <!-- Submit button -->
+                        <div class="form-group">
+                            <label class="col-md-4 control-label" for="btnSubmit"></label>
+                            <div class="col-md-4">
+                                <button id="btnSubmit" name="btnSubmit" class="btn btn-primary" style="display: block; width: 100%;" ng-click="myForm.onSubmitBtnClicked($event)">Submit</button>
+                            </div>
+                        </div>
+
+                    </fieldset>
+                </form>
+            </div>
+
+            <div class="container">
+                <div class="carousel-caption">
+                    <h1>Seek View</h1>
+                </div>
+            </div>
+        </div>
+    </div>
+    <a class="left carousel-control" href="#myCarousel" role="button" data-slide="prev">
+        <span class="glyphicon glyphicon-chevron-left" aria-hidden="true"></span>
+        <span class="sr-only">Previous</span>
+    </a>
+    <a class="right carousel-control" href="#myCarousel" role="button" data-slide="next">
+        <span class="glyphicon glyphicon-chevron-right" aria-hidden="true"></span>
+        <span class="sr-only">Next</span>
+    </a>
+</div><!-- /.carousel -->
+
+<!-- JavaScript -->
+<!-- ---------- -->
+<!-- Bootstrap  -->
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+<script>window.jQuery || document.write('<script src="app/js/jquery.min.js"><\/script>')</script>
+<script src="app/js/bootstrap.min.js"></script>
+
+<!-- AngularJS -->
+<script type="text/javascript" src="app/js/angular.min.js"></script>
+
+<!-- User-Pages -->
+<script src="app/application.js"></script>
+<script src="app/controllers/mapView.js"></script>
+<script src="app/controllers/seekView.js"></script>
+
+
+<!-- Google Maps API -->
+<!-- <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBe1WkxfPMXZ3BOySwp1bPY9MN9lKPIQ34&signed_in=true&callback=initializeMap"></script> -->
+<script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBe1WkxfPMXZ3BOySwp1bPY9MN9lKPIQ34&signed_in=true"></script>
+
+</body>
+</html>
