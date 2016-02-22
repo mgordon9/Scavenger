@@ -1,5 +1,6 @@
 package com.project.ece150.scavenger.remote.task;
 
+import android.accounts.NetworkErrorException;
 import android.net.Uri;
 import android.os.AsyncTask;
 
@@ -46,7 +47,10 @@ public class StoreObjectivesTask extends AsyncTask<String, String, Integer> {
             urlConnection.setDoInput(true);
             urlConnection.setDoOutput(true);
 
+            urlConnection.setRequestProperty("Accept", "application/json");
+
             Uri.Builder builder = new Uri.Builder()
+                    .appendQueryParameter("keyname", _objective.getOwner())
                     .appendQueryParameter("title", _objective.getTitle())
                     .appendQueryParameter("info", _objective.getInfo())
                     .appendQueryParameter("latitude", String.valueOf(_objective.getLatitude()))
@@ -63,6 +67,11 @@ public class StoreObjectivesTask extends AsyncTask<String, String, Integer> {
             writer.flush();
             writer.close();
             os.close();
+
+            int responseCode=urlConnection.getResponseCode();
+            if(responseCode != HttpURLConnection.HTTP_OK) {
+                throw new NetworkErrorException();
+            }
 
             urlConnection.connect();
         } catch (Exception e) {
