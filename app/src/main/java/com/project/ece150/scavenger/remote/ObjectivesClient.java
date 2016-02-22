@@ -2,6 +2,7 @@ package com.project.ece150.scavenger.remote;
 
 import com.project.ece150.scavenger.IObjective;
 import com.project.ece150.scavenger.remote.task.GetObjectivesTask;
+import com.project.ece150.scavenger.remote.task.StoreObjectivesTask;
 
 import java.util.List;
 import java.util.Observable;
@@ -27,8 +28,13 @@ public class ObjectivesClient implements Observer {
     }
 
     public void initDataRequest() {
-        GetObjectivesTask client = new GetObjectivesTask(this, _objectivesParser);
-        client.execute(_objectiveResourceUrl);
+        GetObjectivesTask task = new GetObjectivesTask(this, _objectivesParser);
+        task.execute(_objectiveResourceUrl);
+    }
+
+    public void initStoreRequest(IObjective objective) {
+        StoreObjectivesTask task = new StoreObjectivesTask(_objectivesParser, objective);
+        task.execute(_objectiveResourceUrl);
     }
 
     @Override

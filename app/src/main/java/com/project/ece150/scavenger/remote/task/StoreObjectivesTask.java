@@ -1,5 +1,6 @@
 package com.project.ece150.scavenger.remote.task;
 
+import android.net.Uri;
 import android.os.AsyncTask;
 
 import com.project.ece150.scavenger.IObjective;
@@ -8,6 +9,9 @@ import com.project.ece150.scavenger.remote.ObjectivesParser;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.io.BufferedWriter;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.List;
@@ -28,9 +32,6 @@ public class StoreObjectivesTask extends AsyncTask<String, String, Integer> {
 
     @Override
     protected Integer doInBackground(String... params) {
-        // Parse into Request
-        JSONObject jObjective = _parser.parseObjectiveToJSON(_objective);
-
         // Execute Request
         URL url;
         HttpURLConnection urlConnection = null;
@@ -39,8 +40,29 @@ public class StoreObjectivesTask extends AsyncTask<String, String, Integer> {
         try {
             url = new URL(params[0]);
             urlConnection = (HttpURLConnection) url.openConnection();
-            urlConnection.setRequestProperty("Accept", "application/json");
-            urlConnection.setRequestProperty("Content-Type", "application/json");
+            urlConnection.setReadTimeout(10000);
+            urlConnection.setConnectTimeout(15000);
+            urlConnection.setRequestMethod("POST");
+            urlConnection.setDoInput(true);
+            urlConnection.setDoOutput(true);
+
+            Uri.Builder builder = new Uri.Builder()
+                    .appendQueryParameter("firstParam", "")
+                    .appendQueryParameter("secondParam", paramValue2)
+                    .appendQueryParameter("thirdParam", paramValue3);
+            String query = builder.build().getEncodedQuery();
+
+            OutputStream os = conn.getOutputStream();
+            BufferedWriter writer = new BufferedWriter(
+                    new OutputStreamWriter(os, "UTF-8"));
+            writer.write(query);
+            writer.flush();
+            writer.close();
+            os.close();
+
+            conn.connect();
+
+
             int responseCode = urlConnection.getResponseCode();
         } catch (Exception e) {
             e.printStackTrace();
