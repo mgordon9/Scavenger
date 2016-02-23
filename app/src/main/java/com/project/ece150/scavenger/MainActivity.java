@@ -18,7 +18,6 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -26,6 +25,7 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.UiSettings;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MarkerOptions;
 import com.project.ece150.scavenger.remote.ObjectivesClient;
 import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 
@@ -106,7 +106,27 @@ public class MainActivity extends AppCompatActivity
 
             @Override
             public void onPanelExpanded(View panel) {
-                Toast.makeText(MainActivity.this, "open sesame!", Toast.LENGTH_SHORT).show();
+//                Toast.makeText(MainActivity.this, "open sesame!", Toast.LENGTH_SHORT).show();
+
+                //dummy data
+                ArrayList<IObjective> newList = new ArrayList<IObjective>();
+                Objective d0 = new Objective();
+                d0.setInfo("info 9");
+                d0.setOwner("Matthew");
+                d0.setLatitude(50.51);
+                d0.setLongitude(34.24);
+                d0.setTitle("Objective 0");
+                Objective d1 = new Objective();
+                d1.setInfo("info 7");
+                d1.setOwner("Matthew");
+                d1.setLatitude(37.24);
+                d1.setLongitude(123.51);
+                d1.setTitle("Objective 1");
+                newList.add(d0);
+                newList.add(d1);
+                ObjectiveRecyclerViewAdapter adapter = new ObjectiveRecyclerViewAdapter(newList, MainActivity.this);
+                mRecyclerView.setAdapter(adapter);
+                mRecyclerView.invalidate();
 
                 //Backend
                 ObjectivesClient client = new ObjectivesClient("http://scavenger-game.appspot.com/rest/ds");
@@ -184,7 +204,6 @@ public class MainActivity extends AppCompatActivity
         Location location = mLocationManager.getLastKnownLocation(mProvider);
 
         LatLng currentPos = new LatLng(location.getLatitude(), location.getLongitude());
-        //mMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
         mMap.moveCamera(CameraUpdateFactory.newLatLng(currentPos));
         mMap.animateCamera(CameraUpdateFactory.zoomTo(16.0f));
 
@@ -219,12 +238,22 @@ public class MainActivity extends AppCompatActivity
     @Override
     public void onListFragmentInteraction(IObjective item) {
         //TODO: slide the panel down and zoom to chosen scavenger location
-        Toast.makeText(this, "Clicked it!", Toast.LENGTH_SHORT).show();
+//        Toast.makeText(this, "Clicked it!", Toast.LENGTH_SHORT).show();
+
+        mMap.clear();
+        mLayout.setPanelState(SlidingUpPanelLayout.PanelState.COLLAPSED);
+
+        LatLng objectivePos = new LatLng(item.getLatitude(), item.getLongitude());
+        mMap.addMarker(new MarkerOptions().position(objectivePos).title(item.getTitle()));
+        mMap.moveCamera(CameraUpdateFactory.newLatLng(objectivePos));
+        mMap.animateCamera(CameraUpdateFactory.zoomTo(16.0f));
     }
 
     @Override
     public void update(Observable observable, Object data) {
         // TODO: update slideUpPanelLayout with new objective data
+
+
 
 //        if(data instanceof IObjective) {
 //            data = (IObjective)data;
