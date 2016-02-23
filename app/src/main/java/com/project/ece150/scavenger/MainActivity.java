@@ -25,7 +25,11 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.UiSettings;
 import com.google.android.gms.maps.model.LatLng;
+<<<<<<< HEAD
 import com.google.android.gms.maps.model.MarkerOptions;
+=======
+import com.project.ece150.scavenger.mocks.ObjectiveMock;
+>>>>>>> 3a601db58e9961fc02adffc60ac1abb1b60ee7d9
 import com.project.ece150.scavenger.remote.ObjectivesClient;
 import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 
@@ -78,6 +82,13 @@ public class MainActivity extends AppCompatActivity
         mCriteria = new Criteria();
         mProvider = mLocationManager.getBestProvider(mCriteria, true);
 
+<<<<<<< HEAD
+=======
+        //Backend
+        ObjectivesClient client = new ObjectivesClient("http://10.0.2.2:8090/rest/ds");
+//       client.initStoreRequest(new ObjectiveMock());
+        client.initDataRequest();
+>>>>>>> 3a601db58e9961fc02adffc60ac1abb1b60ee7d9
 
 
 
