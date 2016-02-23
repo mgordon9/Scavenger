@@ -16,11 +16,12 @@ public class ObjectivesClient implements Observer {
 
     private ObjectivesParser _objectivesParser;
     private String _objectiveResourceUrl;
-    private List<IObjective> _objectives;
+    private Observer _observer;
 
-    public ObjectivesClient(String objectiveResourceUrl) {
+    public ObjectivesClient(Observer observer, String objectiveResourceUrl) {
         _objectivesParser = new ObjectivesParser();
         _objectiveResourceUrl = objectiveResourceUrl;
+        _observer = observer;
     }
 
     public ObjectivesParser getObjectiveParser() {
@@ -39,6 +40,10 @@ public class ObjectivesClient implements Observer {
 
     @Override
     public void update(Observable observable, Object data) {
-        _objectives = (List<IObjective>) data;
+        List<IObjective> objectives = (List<IObjective>) data;
+
+        if(_observer != null) {
+            _observer.update(null, objectives);
+        }
     }
 }
