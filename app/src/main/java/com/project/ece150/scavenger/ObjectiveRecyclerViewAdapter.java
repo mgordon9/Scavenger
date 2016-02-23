@@ -17,10 +17,10 @@ import java.util.List;
  */
 public class ObjectiveRecyclerViewAdapter extends RecyclerView.Adapter<ObjectiveRecyclerViewAdapter.ViewHolder> {
 
-    private final List<ObjectiveMock> mValues;
+    private final List<IObjective> mValues;
     private final ObjectivesFragment.OnListFragmentInteractionListener mListener;
 
-    public ObjectiveRecyclerViewAdapter(List<ObjectiveMock> items, ObjectivesFragment.OnListFragmentInteractionListener listener) {
+    public ObjectiveRecyclerViewAdapter(List<IObjective> items, ObjectivesFragment.OnListFragmentInteractionListener listener) {
         mValues = items;
         mListener = listener;
     }
@@ -29,7 +29,7 @@ public class ObjectiveRecyclerViewAdapter extends RecyclerView.Adapter<Objective
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.fragment_item, parent, false);
+                .inflate(R.layout.fragment_objective, parent, false);
         return new ViewHolder(view);
     }
 
@@ -60,7 +60,7 @@ public class ObjectiveRecyclerViewAdapter extends RecyclerView.Adapter<Objective
         public final View mView;
         public final TextView mIdView;
         public final TextView mContentView;
-        public ObjectiveMock mItem;
+        public IObjective mItem;
 
         public ViewHolder(View view) {
             super(view);
