@@ -18,6 +18,7 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -25,11 +26,10 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.UiSettings;
 import com.google.android.gms.maps.model.LatLng;
-<<<<<<< HEAD
 import com.google.android.gms.maps.model.MarkerOptions;
-=======
+
 import com.project.ece150.scavenger.mocks.ObjectiveMock;
->>>>>>> 3a601db58e9961fc02adffc60ac1abb1b60ee7d9
+
 import com.project.ece150.scavenger.remote.ObjectivesClient;
 import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 
@@ -82,13 +82,10 @@ public class MainActivity extends AppCompatActivity
         mCriteria = new Criteria();
         mProvider = mLocationManager.getBestProvider(mCriteria, true);
 
-<<<<<<< HEAD
-=======
         //Backend
         ObjectivesClient client = new ObjectivesClient("http://10.0.2.2:8090/rest/ds");
 //       client.initStoreRequest(new ObjectiveMock());
         client.initDataRequest();
->>>>>>> 3a601db58e9961fc02adffc60ac1abb1b60ee7d9
 
 
 
@@ -263,7 +260,7 @@ public class MainActivity extends AppCompatActivity
     @Override
     public void update(Observable observable, Object data) {
         // TODO: update slideUpPanelLayout with new objective data
-
+        Toast.makeText(MainActivity.this, "update", Toast.LENGTH_SHORT).show();
 
 
 //        if(data instanceof IObjective) {
