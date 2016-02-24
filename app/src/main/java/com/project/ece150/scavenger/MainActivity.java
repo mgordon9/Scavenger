@@ -14,10 +14,10 @@ import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -26,13 +26,23 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.UiSettings;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MarkerOptions;
+
 import com.project.ece150.scavenger.mocks.ObjectiveMock;
+
 import com.project.ece150.scavenger.remote.ObjectivesClient;
+import com.sothree.slidinguppanel.SlidingUpPanelLayout;
+
+import java.util.ArrayList;
+import java.util.Observable;
+import java.util.Observer;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener,
         OnMapReadyCallback,
-        GoogleMap.OnMyLocationButtonClickListener{
+        GoogleMap.OnMyLocationButtonClickListener,
+        ObjectivesFragment.OnListFragmentInteractionListener,
+        Observer{
 
     private static final int MY_LOCATION_PERMISSION_REQUEST_CODE = 1;
 
@@ -42,6 +52,8 @@ public class MainActivity extends AppCompatActivity
     LocationManager mLocationManager;
     Criteria mCriteria;
     String mProvider;
+    SlidingUpPanelLayout mLayout;
+    RecyclerView mRecyclerView;
 
 
     @Override
@@ -75,20 +87,79 @@ public class MainActivity extends AppCompatActivity
 //       client.initStoreRequest(new ObjectiveMock());
         client.initDataRequest();
 
-        TextView bottomButton = (TextView)findViewById(R.id.objectives);
-        bottomButton.setClickable(true);
-        bottomButton.setOnClickListener(new View.OnClickListener() {
+
+
+        ArrayList<IObjective> data = new ArrayList<IObjective>();
+        Objective d0 = new Objective();
+        d0.setInfo("info 0");
+        d0.setOwner("Matthew");
+        Objective d1 = new Objective();
+        d1.setInfo("info 1");
+        d1.setOwner("Matthew");
+        data.add(d0);
+        data.add(d1);
+
+        mRecyclerView = (RecyclerView) findViewById(R.id.list);
+
+        ObjectiveRecyclerViewAdapter adapter = new ObjectiveRecyclerViewAdapter(data, this);
+
+        mRecyclerView.setAdapter(adapter);
+
+        mLayout = (SlidingUpPanelLayout) findViewById(R.id.sliding_layout);
+
+        mLayout.setPanelSlideListener(new SlidingUpPanelLayout.PanelSlideListener() {
             @Override
-            public void onClick(View v) {
-                Toast.makeText(MainActivity.this, "This is when the list will pop up from the bottom", Toast.LENGTH_SHORT).show();
-//                final FragmentTransaction ft = getFragmentManager().beginTransaction();
-//                ft.replace(R.id.main_layout, new ObjectivesFragment(), "ListFrag");
-//                ft.addToBackStack(null);
-//                ft.commit();
-//                getFragmentManager().executePendingTransactions();
+            public void onPanelSlide(View panel, float slideOffset) {
+            }
+
+            @Override
+            public void onPanelExpanded(View panel) {
+//                Toast.makeText(MainActivity.this, "open sesame!", Toast.LENGTH_SHORT).show();
+
+                //dummy data
+                ArrayList<IObjective> newList = new ArrayList<IObjective>();
+                Objective d0 = new Objective();
+                d0.setInfo("info 9");
+                d0.setOwner("Matthew");
+                d0.setLatitude(50.51);
+                d0.setLongitude(34.24);
+                d0.setTitle("Objective 0");
+                Objective d1 = new Objective();
+                d1.setInfo("info 7");
+                d1.setOwner("Matthew");
+                d1.setLatitude(37.24);
+                d1.setLongitude(123.51);
+                d1.setTitle("Objective 1");
+                newList.add(d0);
+                newList.add(d1);
+                ObjectiveRecyclerViewAdapter adapter = new ObjectiveRecyclerViewAdapter(newList, MainActivity.this);
+                mRecyclerView.setAdapter(adapter);
+                mRecyclerView.invalidate();
+
+                //Backend
+                ObjectivesClient client = new ObjectivesClient("http://scavenger-game.appspot.com/rest/ds");
+                client.initDataRequest();
+            }
+
+            @Override
+            public void onPanelCollapsed(View panel) {
+
+            }
+
+            @Override
+            public void onPanelAnchored(View panel) {
+
+            }
+
+            @Override
+            public void onPanelHidden(View panel) {
+
             }
         });
+
     }
+
+
 
     private void startMap() {
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
@@ -132,13 +203,7 @@ public class MainActivity extends AppCompatActivity
     }
 
     /**
-     * Manipulates the map once available.
-     * This callback is triggered when the map is ready to be used.
-     * This is where we can add markers or lines, add listeners or move the camera. In this case,
-     * we just add a marker near Sydney, Australia.
-     * If Google Play services is not installed on the device, the user will be prompted to install
-     * it inside the SupportMapFragment. This method will only be triggered once the user has
-     * installed Google Play services and returned to the app.
+     *
      */
     @Override
     public void onMapReady(GoogleMap googleMap) {
@@ -147,7 +212,6 @@ public class MainActivity extends AppCompatActivity
         Location location = mLocationManager.getLastKnownLocation(mProvider);
 
         LatLng currentPos = new LatLng(location.getLatitude(), location.getLongitude());
-        //mMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
         mMap.moveCamera(CameraUpdateFactory.newLatLng(currentPos));
         mMap.animateCamera(CameraUpdateFactory.zoomTo(16.0f));
 
@@ -177,5 +241,34 @@ public class MainActivity extends AppCompatActivity
     @Override
     public boolean onMyLocationButtonClick() {
         return false;
+    }
+
+    @Override
+    public void onListFragmentInteraction(IObjective item) {
+        //TODO: slide the panel down and zoom to chosen scavenger location
+//        Toast.makeText(this, "Clicked it!", Toast.LENGTH_SHORT).show();
+
+        mMap.clear();
+        mLayout.setPanelState(SlidingUpPanelLayout.PanelState.COLLAPSED);
+
+        LatLng objectivePos = new LatLng(item.getLatitude(), item.getLongitude());
+        mMap.addMarker(new MarkerOptions().position(objectivePos).title(item.getTitle()));
+        mMap.moveCamera(CameraUpdateFactory.newLatLng(objectivePos));
+        mMap.animateCamera(CameraUpdateFactory.zoomTo(16.0f));
+    }
+
+    @Override
+    public void update(Observable observable, Object data) {
+        // TODO: update slideUpPanelLayout with new objective data
+        Toast.makeText(MainActivity.this, "update", Toast.LENGTH_SHORT).show();
+
+
+//        if(data instanceof IObjective) {
+//            data = (IObjective)data;
+//            ObjectiveRecyclerViewAdapter adapter = new ObjectiveRecyclerViewAdapter(data, this);
+//            mRecyclerView.setAdapter(adapter);
+//        }
+//        else
+//            Toast.makeText(MainActivity.this, "API response incorrect", Toast.LENGTH_SHORT).show();
     }
 }

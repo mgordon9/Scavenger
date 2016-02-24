@@ -1,16 +1,14 @@
 package com.project.ece150.scavenger;
 
+import android.app.Fragment;
 import android.content.Context;
 import android.os.Bundle;
-import android.app.Fragment;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-
-import com.project.ece150.scavenger.mocks.ObjectiveMock;
 
 import java.util.ArrayList;
 
@@ -68,7 +66,7 @@ public class ObjectivesFragment extends Fragment {
             } else {
                 recyclerView.setLayoutManager(new GridLayoutManager(context, mColumnCount));
             }
-            recyclerView.setAdapter(new ObjectiveRecyclerViewAdapter(new ArrayList<ObjectiveMock>(), mListener));
+            recyclerView.setAdapter(new ObjectiveRecyclerViewAdapter(new ArrayList<IObjective>(), mListener));
         }
         return view;
     }
@@ -103,6 +101,6 @@ public class ObjectivesFragment extends Fragment {
      */
     public interface OnListFragmentInteractionListener {
         // TODO: Update argument type and name
-        void onListFragmentInteraction(ObjectiveMock item);
+        void onListFragmentInteraction(IObjective item);
     }
 }
