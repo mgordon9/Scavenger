@@ -4,7 +4,7 @@ import android.os.AsyncTask;
 import android.util.Log;
 
 import com.project.ece150.scavenger.IObjective;
-import com.project.ece150.scavenger.remote.ObjectivesParser;
+import com.project.ece150.scavenger.remote.parser.ObjectiveParser;
 
 import org.json.JSONArray;
 
@@ -15,7 +15,6 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.List;
-import java.util.Observer;
 
 /**
  * This Task Object is used to request data from the backend via a REST GET in
@@ -23,10 +22,10 @@ import java.util.Observer;
  */
 public class GetObjectivesTask extends AsyncTask<String, String, List<IObjective>> {
 
-    private Observer _observer;
-    private ObjectivesParser _parser;
+    private IGetObjectivesTaskObserver _observer;
+    private ObjectiveParser _parser;
 
-    public GetObjectivesTask(Observer observer, ObjectivesParser parser) {
+    public GetObjectivesTask(IGetObjectivesTaskObserver observer, ObjectiveParser parser) {
         _observer = observer;
         _parser = parser;
     }
@@ -68,7 +67,7 @@ public class GetObjectivesTask extends AsyncTask<String, String, List<IObjective
     @Override
     protected void onPostExecute(List<IObjective> result) {
         // Notify Observer of updated data set.
-        _observer.update(null, result);
+        _observer.onObjectivesGetReceived(result);
     }
 
     private String readStream(InputStream in) {

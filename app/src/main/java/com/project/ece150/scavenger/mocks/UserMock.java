@@ -21,6 +21,9 @@ public class UserMock implements IUser {
     }
 
     @Override
+    public String getUserid() { return "<userid>"; }
+
+    @Override
     public Double getScore() {
         return 999.9;
     }

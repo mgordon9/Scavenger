@@ -4,6 +4,9 @@ import com.project.ece150.scavenger.IObjective;
 import java.util.List;
 
 public interface IUser {
+    /* ID */
+    String getUserid();
+
     /* Current Score */
     Double getScore();
 

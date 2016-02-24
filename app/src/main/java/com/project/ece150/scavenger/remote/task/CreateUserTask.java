@@ -5,30 +5,26 @@ import android.net.Uri;
 import android.os.AsyncTask;
 
 import com.project.ece150.scavenger.IObjective;
-import com.project.ece150.scavenger.remote.ObjectivesParser;
+import com.project.ece150.scavenger.IUser;
+import com.project.ece150.scavenger.remote.parser.ObjectiveParser;
 
 import org.json.JSONArray;
-import org.json.JSONObject;
 
 import java.io.BufferedWriter;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.util.List;
 
 /**
- * This Task is used to store data to the backend via a REST POST request in
- * asynchronous fire-and-forget fashion.
+ * This Task is used to store data to the backend via a REST POST request.
  */
-public class StoreObjectivesTask extends AsyncTask<String, String, Integer> {
+public class CreateUserTask extends AsyncTask<String, String, Integer> {
 
-    private ObjectivesParser _parser;
-    private IObjective _objective;
+    private IUser _user;
 
-    public StoreObjectivesTask(ObjectivesParser parser, IObjective objective) {
-        _parser = parser;
-        _objective = objective;
+    public CreateUserTask(IUser user) {
+        _user = user;
     }
 
     @Override
@@ -50,14 +46,7 @@ public class StoreObjectivesTask extends AsyncTask<String, String, Integer> {
             urlConnection.setRequestProperty("Accept", "application/json");
 
             Uri.Builder builder = new Uri.Builder()
-                    .appendQueryParameter("keyname", _objective.getOwner())
-                    .appendQueryParameter("title", _objective.getTitle())
-                    .appendQueryParameter("info", _objective.getInfo())
-                    .appendQueryParameter("latitude", String.valueOf(_objective.getLatitude()))
-                    .appendQueryParameter("longitude", String.valueOf(_objective.getLongitude()))
-                    .appendQueryParameter("owner", _objective.getOwner())
-                    .appendQueryParameter("otherConfirmedUsers", "<tbd>")
-                    .appendQueryParameter("activity", "tutoring");
+                    .appendQueryParameter("userid", _user.getUserid());
             String query = builder.build().getEncodedQuery();
 
             OutputStream os = urlConnection.getOutputStream();

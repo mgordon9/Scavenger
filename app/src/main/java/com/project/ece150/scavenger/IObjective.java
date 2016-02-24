@@ -3,6 +3,9 @@ package com.project.ece150.scavenger;
 import java.util.List;
 
 public interface IObjective {
+    /* ID */
+    String getObjectiveid();
+
     /* General Information */
     String getTitle();
     String getInfo();

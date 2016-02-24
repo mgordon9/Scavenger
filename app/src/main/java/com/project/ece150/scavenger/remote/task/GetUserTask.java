@@ -3,12 +3,10 @@ package com.project.ece150.scavenger.remote.task;
 import android.os.AsyncTask;
 import android.util.Log;
 
-import com.project.ece150.scavenger.IObjective;
 import com.project.ece150.scavenger.IUser;
-import com.project.ece150.scavenger.remote.ObjectivesParser;
-import com.project.ece150.scavenger.remote.UserParser;
+import com.project.ece150.scavenger.remote.parser.UserParser;
 
-import org.json.JSONArray;
+import org.json.JSONObject;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -16,8 +14,6 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.util.List;
-import java.util.Observer;
 
 /**
  * This Task Object is used to request data from the backend via a REST GET in
@@ -25,10 +21,10 @@ import java.util.Observer;
  */
 public class GetUserTask extends AsyncTask<String, String, IUser> {
 
-    private Observer _observer;
+    private IGetUserTaskObserver _observer;
     private UserParser _parser;
 
-    public GetUserTask(Observer observer, UserParser parser) {
+    public GetUserTask(IGetUserTaskObserver observer, UserParser parser) {
         _observer = observer;
         _parser = parser;
     }
@@ -38,19 +34,18 @@ public class GetUserTask extends AsyncTask<String, String, IUser> {
         // Fetch Data
         URL url;
         HttpURLConnection urlConnection = null;
-        JSONArray response = new JSONArray();
+        JSONObject response = new JSONObject();
 
         try {
             url = new URL(params[0]);
             urlConnection = (HttpURLConnection) url.openConnection();
             urlConnection.setRequestProperty("Accept", "application/json");
-            urlConnection.setRequestProperty("Content-Type", "application/json");
             int responseCode = urlConnection.getResponseCode();
 
             if(responseCode == 200){
                 String responseString = readStream(urlConnection.getInputStream());
                 Log.v("GetObjectivesTask", responseString);
-                response = new JSONArray(responseString);
+                response = new JSONObject(responseString);
             }else{
                 Log.v("GetObjectivesTask", "Response code:"+ responseCode);
             }
@@ -70,7 +65,7 @@ public class GetUserTask extends AsyncTask<String, String, IUser> {
     @Override
     protected void onPostExecute(IUser result) {
         // Notify Observer of updated data set.
-        _observer.update(null, result);
+        _observer.onUserGetReceived(result);
     }
 
     private String readStream(InputStream in) {

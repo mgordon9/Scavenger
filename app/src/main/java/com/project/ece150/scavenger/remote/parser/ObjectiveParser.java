@@ -1,4 +1,4 @@
-package com.project.ece150.scavenger.remote;
+package com.project.ece150.scavenger.remote.parser;
 
 import com.project.ece150.scavenger.IObjective;
 import com.project.ece150.scavenger.Objective;
@@ -13,8 +13,8 @@ import java.util.List;
 /**
  * Helper object for parsing JSON to IObjective objects
  */
-public class ObjectivesParser {
-    public ObjectivesParser() {
+public class ObjectiveParser {
+    public ObjectiveParser() {
     }
 
     public List<IObjective> parseJSONToObjectives(JSONArray json) {
@@ -27,9 +27,7 @@ public class ObjectivesParser {
             try {
                 JSONObject jObjective = json.getJSONObject(i);
 
-                String s = jObjective.getString("keyname");
-                objective.setTitle(s);
-
+                objective.setObjectiveid(jObjective.getString("keyname"));
                 objective.setTitle(jObjective.getString("title"));
                 objective.setInfo(jObjective.getString("info"));
                 objective.setLatitude(Double.parseDouble(jObjective.getString("latitude")));

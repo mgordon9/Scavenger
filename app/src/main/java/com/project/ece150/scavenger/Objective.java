@@ -4,8 +4,9 @@ import java.io.StringBufferInputStream;
 import java.util.List;
  
 public class Objective implements IObjective {
- 
-    private  String _title;
+
+    private String _objectiveid;
+    private String _title;
     private String _info;
     private Double _latitude;
     private Double _longitude;
@@ -13,7 +14,12 @@ public class Objective implements IObjective {
     private boolean _isVisitedVisual;
     private String _owner;
     private List<String> _otherConfirmedUsers;
- 
+
+    @Override
+    public String getObjectiveid() { return _objectiveid; }
+
+    public void setObjectiveid(String objectiveid) { _objectiveid = objectiveid; }
+
     @Override
     public String getTitle() {
         return _title;

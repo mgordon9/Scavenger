@@ -18,6 +18,7 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -26,19 +27,20 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.UiSettings;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
-import com.project.ece150.scavenger.remote.ObjectivesClient;
+import com.project.ece150.scavenger.remote.IRemoteClientObserver;
+import com.project.ece150.scavenger.remote.RemoteClient;
 import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Observable;
-import java.util.Observer;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener,
         OnMapReadyCallback,
         GoogleMap.OnMyLocationButtonClickListener,
         ObjectivesFragment.OnListFragmentInteractionListener,
-        Observer,
+        IRemoteClientObserver,
         SlidingUpPanelLayout.PanelSlideListener{
 
     private static final int MY_LOCATION_PERMISSION_REQUEST_CODE = 1;
@@ -165,29 +167,9 @@ public class MainActivity extends AppCompatActivity
     public void onPanelExpanded(View panel) {
 //                Toast.makeText(MainActivity.this, "open sesame!", Toast.LENGTH_SHORT).show();
 
-        //dummy data
-        ArrayList<IObjective> newList = new ArrayList<IObjective>();
-        Objective d0 = new Objective();
-        d0.setInfo("info 9");
-        d0.setOwner("Matthew");
-        d0.setLatitude(50.51);
-        d0.setLongitude(34.24);
-        d0.setTitle("Objective 0");
-        Objective d1 = new Objective();
-        d1.setInfo("info 7");
-        d1.setOwner("Matthew");
-        d1.setLatitude(37.24);
-        d1.setLongitude(123.51);
-        d1.setTitle("Objective 1");
-        newList.add(d0);
-        newList.add(d1);
-        ObjectiveRecyclerViewAdapter adapter = new ObjectiveRecyclerViewAdapter(newList, MainActivity.this);
-        mRecyclerView.setAdapter(adapter);
-        mRecyclerView.invalidate();
-
         //Backend
-        ObjectivesClient client = new ObjectivesClient(this, "http://scavenger-game.appspot.com/rest/ds");
-        client.initDataRequest();
+        RemoteClient client = new RemoteClient(this, "http://scavenger-game.appspot.com");
+        client.initObjectivesGetRequest();
     }
 
     @Override
@@ -302,14 +284,16 @@ public class MainActivity extends AppCompatActivity
     }
 
     @Override
-    public void update(Observable observable, Object data) {
-        // TODO: update slideUpPanelLayout with new objective data
-//        if(data instanceof IObjective) {
-//            data = (IObjective)data;
-//            ObjectiveRecyclerViewAdapter adapter = new ObjectiveRecyclerViewAdapter(data, this);
-//            mRecyclerView.setAdapter(adapter);
-//        }
-//        else
-//            Toast.makeText(MainActivity.this, "API response incorrect", Toast.LENGTH_SHORT).show();
+    public void onUserGetReceived(IUser user) {
+
+    }
+
+    @Override
+    public void onObjectivesGetReceived(List<IObjective> objectives) {
+        Toast.makeText(MainActivity.this, "update", Toast.LENGTH_SHORT).show();
+        
+        ObjectiveRecyclerViewAdapter adapter = new ObjectiveRecyclerViewAdapter(objectives, MainActivity.this);
+        mRecyclerView.setAdapter(adapter);
+        mRecyclerView.invalidate();
     }
 }

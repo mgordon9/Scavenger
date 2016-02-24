@@ -4,9 +4,15 @@ import java.util.List;
 
 public class User implements IUser {
 
+    private String _userid;
     private Double _score;
     private List<IObjective> _locationObjectives;
     private List<IObjective> _visualObjectives;
+
+    @Override
+    public String getUserid() { return _userid; }
+
+    public void setUserid(String userid) { _userid = userid; }
 
     @Override
     public Double getScore() {
