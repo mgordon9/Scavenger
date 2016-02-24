@@ -1,4 +1,4 @@
-package scavenger.utility;
+package scavenger.Objective.util;
 
 import java.util.Date;
 import java.util.LinkedList;
@@ -7,7 +7,7 @@ import java.util.List;
 import com.google.appengine.api.datastore.*;
 
 import scavenger.GPSCoordinate;
-import scavenger.Objective;
+import scavenger.Objective.Objective;
 
 /**
  * A Objective-specific connector for the Datastore.

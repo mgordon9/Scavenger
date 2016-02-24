@@ -1,4 +1,4 @@
-package scavenger;
+package scavenger.Objective;
  
 import java.io.*;
 import java.util.*;
@@ -7,11 +7,11 @@ import javax.servlet.http.*;
 import javax.ws.rs.*;
 import javax.ws.rs.core.*;
 
-import scavenger.utility.ObjectiveDatastoreConnector;
+import scavenger.GPSCoordinate;
+import scavenger.Objective.util.ObjectiveDatastoreConnector;
 
-//Map this class to /ds route
-@Path("/ds")
-public class DatastoreResource {
+@Path("/objectives")
+public class ObjectivesResource {
   // Allows to insert contextual objects into the class,
   // e.g. ServletContext, Request, Response, UriInfo
   @Context
@@ -104,8 +104,8 @@ public class DatastoreResource {
  
   //The @PathParam annotation says that keyname can be inserted as parameter after this class's route /ds
   @Path("{keyname}")
-  public ObjectiveResource getEntity(@PathParam("keyname") String keyname) {
+  public scavenger.Objective.ObjectiveResource getEntity(@PathParam("keyname") String keyname) {
     System.out.println("GETting Objective for " + keyname);
-    return new ObjectiveResource(uriInfo, request, keyname);
+    return new scavenger.Objective.ObjectiveResource(uriInfo, request, keyname);
   }
 }
