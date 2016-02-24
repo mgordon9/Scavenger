@@ -27,9 +27,6 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.UiSettings;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
-
-import com.project.ece150.scavenger.mocks.ObjectiveMock;
-
 import com.project.ece150.scavenger.remote.ObjectivesClient;
 import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 
@@ -42,7 +39,8 @@ public class MainActivity extends AppCompatActivity
         OnMapReadyCallback,
         GoogleMap.OnMyLocationButtonClickListener,
         ObjectivesFragment.OnListFragmentInteractionListener,
-        Observer{
+        Observer,
+        SlidingUpPanelLayout.PanelSlideListener{
 
     private static final int MY_LOCATION_PERMISSION_REQUEST_CODE = 1;
 
@@ -82,10 +80,10 @@ public class MainActivity extends AppCompatActivity
         mCriteria = new Criteria();
         mProvider = mLocationManager.getBestProvider(mCriteria, true);
 
-        //Backend
-        ObjectivesClient client = new ObjectivesClient("http://10.0.2.2:8090/rest/ds");
-//       client.initStoreRequest(new ObjectiveMock());
-        client.initDataRequest();
+//        //Backend
+//        ObjectivesClient client = new ObjectivesClient("http://10.0.2.2:8090/rest/ds");
+////       client.initStoreRequest(new ObjectiveMock());
+//        client.initDataRequest();
 
 
 
@@ -100,66 +98,113 @@ public class MainActivity extends AppCompatActivity
         data.add(d1);
 
         mRecyclerView = (RecyclerView) findViewById(R.id.list);
-
         ObjectiveRecyclerViewAdapter adapter = new ObjectiveRecyclerViewAdapter(data, this);
 
         mRecyclerView.setAdapter(adapter);
 
         mLayout = (SlidingUpPanelLayout) findViewById(R.id.sliding_layout);
+        mLayout.setPanelSlideListener(this);
 
-        mLayout.setPanelSlideListener(new SlidingUpPanelLayout.PanelSlideListener() {
-            @Override
-            public void onPanelSlide(View panel, float slideOffset) {
-            }
-
-            @Override
-            public void onPanelExpanded(View panel) {
-//                Toast.makeText(MainActivity.this, "open sesame!", Toast.LENGTH_SHORT).show();
-
-                //dummy data
-                ArrayList<IObjective> newList = new ArrayList<IObjective>();
-                Objective d0 = new Objective();
-                d0.setInfo("info 9");
-                d0.setOwner("Matthew");
-                d0.setLatitude(50.51);
-                d0.setLongitude(34.24);
-                d0.setTitle("Objective 0");
-                Objective d1 = new Objective();
-                d1.setInfo("info 7");
-                d1.setOwner("Matthew");
-                d1.setLatitude(37.24);
-                d1.setLongitude(123.51);
-                d1.setTitle("Objective 1");
-                newList.add(d0);
-                newList.add(d1);
-                ObjectiveRecyclerViewAdapter adapter = new ObjectiveRecyclerViewAdapter(newList, MainActivity.this);
-                mRecyclerView.setAdapter(adapter);
-                mRecyclerView.invalidate();
-
-                //Backend
-                ObjectivesClient client = new ObjectivesClient("http://scavenger-game.appspot.com/rest/ds");
-                client.initDataRequest();
-            }
-
-            @Override
-            public void onPanelCollapsed(View panel) {
-
-            }
-
-            @Override
-            public void onPanelAnchored(View panel) {
-
-            }
-
-            @Override
-            public void onPanelHidden(View panel) {
-
-            }
-        });
+//        mLayout.setPanelSlideListener(new SlidingUpPanelLayout.PanelSlideListener() {
+//            @Override
+//            public void onPanelSlide(View panel, float slideOffset) {
+//            }
+//
+//            @Override
+//            public void onPanelExpanded(View panel) {
+////                Toast.makeText(MainActivity.this, "open sesame!", Toast.LENGTH_SHORT).show();
+//
+//                //dummy data
+//                ArrayList<IObjective> newList = new ArrayList<IObjective>();
+//                Objective d0 = new Objective();
+//                d0.setInfo("info 9");
+//                d0.setOwner("Matthew");
+//                d0.setLatitude(50.51);
+//                d0.setLongitude(34.24);
+//                d0.setTitle("Objective 0");
+//                Objective d1 = new Objective();
+//                d1.setInfo("info 7");
+//                d1.setOwner("Matthew");
+//                d1.setLatitude(37.24);
+//                d1.setLongitude(123.51);
+//                d1.setTitle("Objective 1");
+//                newList.add(d0);
+//                newList.add(d1);
+//                ObjectiveRecyclerViewAdapter adapter = new ObjectiveRecyclerViewAdapter(newList, MainActivity.this);
+//                mRecyclerView.setAdapter(adapter);
+//                mRecyclerView.invalidate();
+//
+//                //Backend
+//                ObjectivesClient client = new ObjectivesClient(MainAcivity.this, "http://scavenger-game.appspot.com/rest/ds");
+//                client.initDataRequest();
+//            }
+//
+//            @Override
+//            public void onPanelCollapsed(View panel) {
+//
+//            }
+//
+//            @Override
+//            public void onPanelAnchored(View panel) {
+//
+//            }
+//
+//            @Override
+//            public void onPanelHidden(View panel) {
+//
+//            }
+//        });
 
     }
 
 
+    @Override
+    public void onPanelSlide(View panel, float slideOffset) {
+    }
+
+    @Override
+    public void onPanelExpanded(View panel) {
+//                Toast.makeText(MainActivity.this, "open sesame!", Toast.LENGTH_SHORT).show();
+
+        //dummy data
+        ArrayList<IObjective> newList = new ArrayList<IObjective>();
+        Objective d0 = new Objective();
+        d0.setInfo("info 9");
+        d0.setOwner("Matthew");
+        d0.setLatitude(50.51);
+        d0.setLongitude(34.24);
+        d0.setTitle("Objective 0");
+        Objective d1 = new Objective();
+        d1.setInfo("info 7");
+        d1.setOwner("Matthew");
+        d1.setLatitude(37.24);
+        d1.setLongitude(123.51);
+        d1.setTitle("Objective 1");
+        newList.add(d0);
+        newList.add(d1);
+        ObjectiveRecyclerViewAdapter adapter = new ObjectiveRecyclerViewAdapter(newList, MainActivity.this);
+        mRecyclerView.setAdapter(adapter);
+        mRecyclerView.invalidate();
+
+        //Backend
+        ObjectivesClient client = new ObjectivesClient(this, "http://scavenger-game.appspot.com/rest/ds");
+        client.initDataRequest();
+    }
+
+    @Override
+    public void onPanelCollapsed(View panel) {
+
+    }
+
+    @Override
+    public void onPanelAnchored(View panel) {
+
+    }
+
+    @Override
+    public void onPanelHidden(View panel) {
+
+    }
 
     private void startMap() {
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
