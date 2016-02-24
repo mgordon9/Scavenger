@@ -21,8 +21,8 @@ public class UserMock implements IUser {
     }
 
     @Override
-    public int getScore() {
-        return 999;
+    public Double getScore() {
+        return 999.9;
     }
 
     @Override

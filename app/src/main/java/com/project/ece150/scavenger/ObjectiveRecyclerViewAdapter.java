@@ -36,7 +36,8 @@ public class ObjectiveRecyclerViewAdapter extends RecyclerView.Adapter<Objective
     @Override
     public void onBindViewHolder(final ViewHolder holder, int position) {
         holder.mItem = mValues.get(position);
-        holder.mIdView.setText(mValues.get(position).getInfo());
+        holder.mIdView.setText(mValues.get(position).getTitle()
+                                + ", " + mValues.get(position).getInfo());
         holder.mContentView.setText(mValues.get(position).getOwner());
 
         holder.mView.setOnClickListener(new View.OnClickListener() {

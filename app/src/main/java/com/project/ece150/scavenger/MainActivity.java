@@ -34,6 +34,7 @@ import com.project.ece150.scavenger.remote.ObjectivesClient;
 import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Observable;
 import java.util.Observer;
 
@@ -42,7 +43,7 @@ public class MainActivity extends AppCompatActivity
         OnMapReadyCallback,
         GoogleMap.OnMyLocationButtonClickListener,
         ObjectivesFragment.OnListFragmentInteractionListener,
-        Observer{
+        Observer {
 
     private static final int MY_LOCATION_PERMISSION_REQUEST_CODE = 1;
 
@@ -82,11 +83,6 @@ public class MainActivity extends AppCompatActivity
         mCriteria = new Criteria();
         mProvider = mLocationManager.getBestProvider(mCriteria, true);
 
-        //Backend
-        ObjectivesClient client = new ObjectivesClient("http://10.0.2.2:8090/rest/ds");
-//       client.initStoreRequest(new ObjectiveMock());
-        client.initDataRequest();
-
 
 
         ArrayList<IObjective> data = new ArrayList<IObjective>();
@@ -116,28 +112,8 @@ public class MainActivity extends AppCompatActivity
             public void onPanelExpanded(View panel) {
 //                Toast.makeText(MainActivity.this, "open sesame!", Toast.LENGTH_SHORT).show();
 
-                //dummy data
-                ArrayList<IObjective> newList = new ArrayList<IObjective>();
-                Objective d0 = new Objective();
-                d0.setInfo("info 9");
-                d0.setOwner("Matthew");
-                d0.setLatitude(50.51);
-                d0.setLongitude(34.24);
-                d0.setTitle("Objective 0");
-                Objective d1 = new Objective();
-                d1.setInfo("info 7");
-                d1.setOwner("Matthew");
-                d1.setLatitude(37.24);
-                d1.setLongitude(123.51);
-                d1.setTitle("Objective 1");
-                newList.add(d0);
-                newList.add(d1);
-                ObjectiveRecyclerViewAdapter adapter = new ObjectiveRecyclerViewAdapter(newList, MainActivity.this);
-                mRecyclerView.setAdapter(adapter);
-                mRecyclerView.invalidate();
-
                 //Backend
-                ObjectivesClient client = new ObjectivesClient("http://scavenger-game.appspot.com/rest/ds");
+                ObjectivesClient client = new ObjectivesClient(MainActivity.this, "http://scavenger-game.appspot.com/rest/objectives");
                 client.initDataRequest();
             }
 
@@ -209,10 +185,6 @@ public class MainActivity extends AppCompatActivity
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
 
-        Location location = mLocationManager.getLastKnownLocation(mProvider);
-
-        LatLng currentPos = new LatLng(location.getLatitude(), location.getLongitude());
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(currentPos));
         mMap.animateCamera(CameraUpdateFactory.zoomTo(16.0f));
 
         mMap.setOnMyLocationButtonClickListener(this);
@@ -262,6 +234,11 @@ public class MainActivity extends AppCompatActivity
         // TODO: update slideUpPanelLayout with new objective data
         Toast.makeText(MainActivity.this, "update", Toast.LENGTH_SHORT).show();
 
+        List<IObjective> objectives = (List<IObjective>) data;
+
+        ObjectiveRecyclerViewAdapter adapter = new ObjectiveRecyclerViewAdapter(objectives, MainActivity.this);
+        mRecyclerView.setAdapter(adapter);
+        mRecyclerView.invalidate();
 
 //        if(data instanceof IObjective) {
 //            data = (IObjective)data;
