@@ -1,0 +1,26 @@
+Requests for the REST API
+-------------------------
+- can be executed using any REST Client, for example 
+  - POSTMAN which is available in the Chrome App Store. Be aware to add the headers to the request!
+  - CURL which is a unix standard command line tool and should be available on any Linux/Mac machine
+
+Objectives
+----------
+- Retrieve all Objectives:
+    curl -H "Accept: application/json" -X GET http://scavenger-game.appspot.com/rest/objectives
+
+- Create a new Objective:
+    curl -H "Accept: application/json" -X POST --data "keyname=location10&title=<title>&info=<info>&latitude=39.9769214975&longitude=-110.185279856&owner=<owner>&otherConfirmedUsers=<otherConfirmedUsers>&activity=photo" http://scavenger-game.appspot.com/rest/objectives
+
+Users
+-----
+- Objective id's are stored with each user as a list. So each User data record doesn't contain the full dataset of the objective, but only the id.
+
+- Retrieve all Data from User with id 'us2':
+    curl -H "Accept: application/json" -X GET http://scavenger-game.appspot.com/rest/users/us2
+
+- Create a new User with id 'us2':
+    curl -H "Accept: application/json" -X POST --data "userid=us2" http://scavenger-game.appspot.com/rest/users
+
+- Add a Objective of Type 'visualObjective' to a User 'us2', provided the keyname of a existing objective:
+    curl -H "Accept: application/json" -X POST --data "objectiveType=visualObjective&objectiveId=location101456300906241" http://scavenger-game.appspot.com/rest/users/us2

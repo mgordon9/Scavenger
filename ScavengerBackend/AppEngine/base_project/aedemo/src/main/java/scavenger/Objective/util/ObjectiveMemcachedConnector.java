@@ -1,9 +1,9 @@
-package scavenger.utility;
+package scavenger.Objective.util;
 
 import com.google.appengine.api.memcache.MemcacheService;
 import com.google.appengine.api.memcache.MemcacheServiceFactory;
 
-import scavenger.Objective;
+import scavenger.Objective.Objective;
 
 /**
  * A Objective-specific connector for Memcached.

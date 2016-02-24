@@ -5,7 +5,7 @@ import java.util.List;
 
 public interface IUser {
     /* Current Score */
-    int getScore();
+    Double getScore();
 
     /* Visited objectives, confirmed on location data */
     List<IObjective> getLocationObjectives();

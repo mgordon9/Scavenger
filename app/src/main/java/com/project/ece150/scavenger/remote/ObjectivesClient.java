@@ -17,6 +17,7 @@ public class ObjectivesClient implements Observer {
     private ObjectivesParser _objectivesParser;
     private String _objectiveResourceUrl;
     private Observer _observer;
+    List<IObjective> _objectives;
 
     public ObjectivesClient(Observer observer, String objectiveResourceUrl) {
         _objectivesParser = new ObjectivesParser();
@@ -24,8 +25,8 @@ public class ObjectivesClient implements Observer {
         _observer = observer;
     }
 
-    public ObjectivesParser getObjectiveParser() {
-        return _objectivesParser;
+    public List<IObjective> getObjectives() {
+        return _objectives;
     }
 
     public void initDataRequest() {
@@ -33,17 +34,18 @@ public class ObjectivesClient implements Observer {
         task.execute(_objectiveResourceUrl);
     }
 
+    // called when List<IObjective> object is available.
+    @Override
+    public void update(Observable observable, Object data) {
+        _objectives = (List<IObjective>) data;
+
+        if(_observer != null) {
+            _observer.update(null, _objectives);
+        }
+    }
+
     public void initStoreRequest(IObjective objective) {
         StoreObjectivesTask task = new StoreObjectivesTask(_objectivesParser, objective);
         task.execute(_objectiveResourceUrl);
-    }
-
-    @Override
-    public void update(Observable observable, Object data) {
-        List<IObjective> objectives = (List<IObjective>) data;
-
-        if(_observer != null) {
-            _observer.update(null, objectives);
-        }
     }
 }

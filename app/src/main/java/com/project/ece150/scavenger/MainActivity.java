@@ -18,7 +18,6 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -305,9 +304,6 @@ public class MainActivity extends AppCompatActivity
     @Override
     public void update(Observable observable, Object data) {
         // TODO: update slideUpPanelLayout with new objective data
-        Toast.makeText(MainActivity.this, "update", Toast.LENGTH_SHORT).show();
-
-
 //        if(data instanceof IObjective) {
 //            data = (IObjective)data;
 //            ObjectiveRecyclerViewAdapter adapter = new ObjectiveRecyclerViewAdapter(data, this);

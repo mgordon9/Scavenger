@@ -1,10 +1,10 @@
-package scavenger;
+package scavenger.Objective;
  
 import javax.ws.rs.*;
 import javax.ws.rs.core.*;
 import java.util.*;
 
-import scavenger.utility.ObjectiveDatastoreConnector;
+import scavenger.Objective.util.ObjectiveDatastoreConnector;
 
 public class ObjectiveResource {
   @Context
