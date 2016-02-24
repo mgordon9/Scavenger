@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_id": "scavenger-game",
+    "project_number": "532829448908",
+    "name": "scavenger-game"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:532829448908:android:c49fda37c5575fed",
+        "client_id": "android:com.project.ece150.scavenger",
+        "client_type": 1,
+        "android_client_info": {
+          "package_name": "com.project.ece150.scavenger"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "532829448908-iiasaad1ac2tnk8jueent5voje8d9eft.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.project.ece150.scavenger",
+            "certificate_hash": "4880D470B9F06FFE771EA955B33220C366FFD38E"
+          }
+        },
+        {
+          "client_id": "532829448908-kr85oj7bipchhd0rqgi9qferp3t2qod2.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "cloud_messaging_service": {
+          "status": 1,
+          "apns_config": []
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "google_signin_service": {
+          "status": 2
+        },
+        "ads_service": {
+          "status": 1
+        }
+      }
+    }
+  ],
+  "client_info": [],
+  "ARTIFACT_VERSION": "1"
+}
