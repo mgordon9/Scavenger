@@ -8,12 +8,15 @@ import com.project.ece150.scavenger.IObjective;
 import com.project.ece150.scavenger.remote.parser.ObjectiveParser;
 
 import org.json.JSONArray;
+import org.json.JSONObject;
 
 import java.io.BufferedWriter;
+import java.io.DataOutputStream;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 
 /**
  * This Task is used to store data to the backend via a REST POST request in
@@ -46,25 +49,28 @@ public class CreateObjectiveTask extends AsyncTask<String, String, Integer> {
             urlConnection.setDoOutput(true);
 
             urlConnection.setRequestProperty("Accept", "application/json");
+            urlConnection.setRequestProperty("Content-Type", "application/json");
 
-            Uri.Builder builder = new Uri.Builder()
-                    .appendQueryParameter("keyname", _objective.getOwner())
-                    .appendQueryParameter("title", _objective.getTitle())
-                    .appendQueryParameter("info", _objective.getInfo())
-                    .appendQueryParameter("latitude", String.valueOf(_objective.getLatitude()))
-                    .appendQueryParameter("longitude", String.valueOf(_objective.getLongitude()))
-                    .appendQueryParameter("owner", _objective.getOwner())
-                    .appendQueryParameter("otherConfirmedUsers", "<tbd>")
-                    .appendQueryParameter("activity", "tutoring");
-            String query = builder.build().getEncodedQuery();
+            JSONObject jObjective = new JSONObject();
+            try {
+                jObjective.put("keyname", _objective.getObjectiveid());
+                jObjective.put("title", _objective.getTitle());
+                jObjective.put("info", _objective.getInfo());
+                jObjective.put("latitude", _objective.getLatitude());
+                jObjective.put("longitude", _objective.getLongitude());
+                jObjective.put("owner", _objective.getOwner());
+                jObjective.put("otherConfirmedUsers", "<tbd>");
+                jObjective.put("activity", "<tbd>");
+            } catch(Exception e) {
+                e.printStackTrace();
+            }
+            String sObjective = jObjective.toString();
+            byte[] postData = sObjective.getBytes( StandardCharsets.UTF_8 );
 
-            OutputStream os = urlConnection.getOutputStream();
-            BufferedWriter writer = new BufferedWriter(
-                    new OutputStreamWriter(os, "UTF-8"));
-            writer.write(query);
-            writer.flush();
-            writer.close();
-            os.close();
+            try(DataOutputStream wr = new DataOutputStream(urlConnection.getOutputStream())) {
+                wr.write(postData);
+            }
+
 
             int responseCode=urlConnection.getResponseCode();
             if(responseCode != HttpURLConnection.HTTP_OK) {

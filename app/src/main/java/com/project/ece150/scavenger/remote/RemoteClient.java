@@ -62,7 +62,7 @@ public class RemoteClient implements IGetUserTaskObserver, IGetObjectivesTaskObs
 
     public void initObjectivesCreateRequest(IObjective objective) {
         CreateObjectiveTask task = new CreateObjectiveTask(_objectiveParser, objective);
-        task.execute(_resourceURI);
+        task.execute(_resourceURI + "/rest/objectives");
     }
 
     /**

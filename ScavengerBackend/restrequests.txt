@@ -6,21 +6,21 @@ Requests for the REST API
 
 Objectives
 ----------
-- Retrieve all Objectives:
-    curl -H "Accept: application/json" -X GET http://scavenger-game.appspot.com/rest/objectives
+OK - Retrieve all Objectives:
+    curl -H "Accept: application/json" -X GET http://localhost:8080/rest/objectives
 
-- Create a new Objective:
-    curl -H "Accept: application/json" -X POST --data "keyname=location10&title=<title>&info=<info>&latitude=39.9769214975&longitude=-110.185279856&owner=<owner>&otherConfirmedUsers=<otherConfirmedUsers>&activity=photo" http://scavenger-game.appspot.com/rest/objectives
+OK - Create a new Objective:
+    curl -H "Accept: application/json" -H "Content-Type: application/json" -X POST --data "{\"keyname\":\"hello\", \"title\":\"<title.yaay>\",\"info\":\"<info>\",\"latitude\":39.9769214975,\"longitude\":-110.185279856,\"owner\":\"<owner>\",\"otherConfirmedUsers\":\"<otherConfirmedUsers>\",\"isVisitedGPS\":null,\"isVisitedVisual\":null,\"activity\":\"photo\", \"image\": null, \"date\":1456348804531}" http://localhost:8080/rest/objectives
 
 Users
 -----
 - Objective id's are stored with each user as a list. So each User data record doesn't contain the full dataset of the objective, but only the id.
 
 - Retrieve all Data from User with id 'us2':
-    curl -H "Accept: application/json" -X GET http://scavenger-game.appspot.com/rest/users/us2
+  curl -H "Accept: application/json" -X GET http://localhost:8080/rest/users/us2
 
-- Create a new User with id 'us2':
-    curl -H "Accept: application/json" -X POST --data "userid=us2" http://scavenger-game.appspot.com/rest/users
+OK - Create a new User with id 'us2':
+    curl -v -H "Accept: application/json" -H "Content-Type: application/json" -X POST --data "{\"userid\":\"us2\"}" http://localhost:8080/rest/users
 
-- Add a Objective of Type 'visualObjective' to a User 'us2', provided the keyname of a existing objective:
-    curl -H "Accept: application/json" -X POST --data "objectiveType=visualObjective&objectiveId=location101456300906241" http://scavenger-game.appspot.com/rest/users/us2
+OK - Add a Objective of Type 'visualObjective' to a User 'us2', provided the keyname of a existing objective:
+    curl -H "Accept: application/json" -X POST --data "objectiveType=visualObjective&objectiveId=location101456300906241" http://http://localhost:8080/rest/users/us2

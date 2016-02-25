@@ -9,12 +9,15 @@ import com.project.ece150.scavenger.IUser;
 import com.project.ece150.scavenger.remote.parser.ObjectiveParser;
 
 import org.json.JSONArray;
+import org.json.JSONObject;
 
 import java.io.BufferedWriter;
+import java.io.DataOutputStream;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 
 /**
  * This Task is used to store data to the backend via a REST POST request.
@@ -44,18 +47,20 @@ public class CreateUserTask extends AsyncTask<String, String, Integer> {
             urlConnection.setDoOutput(true);
 
             urlConnection.setRequestProperty("Accept", "application/json");
+            urlConnection.setRequestProperty("Content-Type", "application/json");
 
-            Uri.Builder builder = new Uri.Builder()
-                    .appendQueryParameter("userid", _user.getUserid());
-            String query = builder.build().getEncodedQuery();
+            JSONObject jUser = new JSONObject();
+            try {
+                jUser.put("userid", _user.getUserid());
+            } catch(Exception e) {
+                e.printStackTrace();
+            }
+            String sUser = jUser.toString();
+            byte[] postData = sUser.getBytes( StandardCharsets.UTF_8 );
 
-            OutputStream os = urlConnection.getOutputStream();
-            BufferedWriter writer = new BufferedWriter(
-                    new OutputStreamWriter(os, "UTF-8"));
-            writer.write(query);
-            writer.flush();
-            writer.close();
-            os.close();
+            try(DataOutputStream wr = new DataOutputStream(urlConnection.getOutputStream())) {
+                wr.write(postData);
+            }
 
             int responseCode=urlConnection.getResponseCode();
             if(responseCode != HttpURLConnection.HTTP_OK) {

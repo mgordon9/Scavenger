@@ -25,7 +25,7 @@ public class ObjectiveMock implements IObjective {
     }
 
     @Override
-    public String getObjectiveid() { return "<myId>"; }
+    public String getObjectiveid() { return "MyId"; }
 
     @Override
     public String getTitle() {

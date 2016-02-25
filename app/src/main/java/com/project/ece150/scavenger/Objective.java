@@ -76,7 +76,7 @@ public class Objective implements IObjective {
  
     @Override
     public String getOwner() {
-        return null;
+        return _owner;
     }
  
     public void setOwner(String owner) {
