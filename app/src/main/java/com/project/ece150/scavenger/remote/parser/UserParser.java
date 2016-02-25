@@ -23,7 +23,8 @@ public class UserParser {
 
         try {
             user.setUserid(json.getString("userid"));
-            user.setScore(json.getDouble("score"));
+            if(json.getString("score") != "null")
+                user.setScore(json.getDouble("score"));
             user.setLocationObjectives(_objectiveParser.parseJSONToObjectives(json.getJSONArray("locationObjectives")));
             user.setVisualObjectives(_objectiveParser.parseJSONToObjectives(json.getJSONArray("visualObjectives")));
         } catch (JSONException e) {
