@@ -28,7 +28,6 @@ import com.google.android.gms.maps.UiSettings;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.project.ece150.scavenger.mocks.ObjectiveMock;
-import com.project.ece150.scavenger.remote.EObjectiveConfirmedType;
 import com.project.ece150.scavenger.remote.IRemoteClientObserver;
 import com.project.ece150.scavenger.remote.RemoteClient;
 import com.sothree.slidinguppanel.SlidingUpPanelLayout;
@@ -63,39 +62,6 @@ public class MainActivity extends AppCompatActivity
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-
-        /*
-        jObjective.put("keyname", _objective.getObjectiveid());
-        jObjective.put("title", _objective.getTitle());
-        jObjective.put("info", _objective.getInfo());
-        jObjective.put("latitude", _objective.getLatitude());
-        jObjective.put("longitude", _objective.getLongitude());
-        jObjective.put("owner", _objective.getOwner());
-        jObjective.put("otherConfirmedUsers", "<tbd>");
-        jObjective.put("activity", "<tbd>");
-        */
-
-/*        Objective obj = new Objective();
-        obj.setObjectiveid("objid");
-        obj.setTitle("title");
-        obj.setInfo("info");
-        obj.setLatitude(11.1);
-        obj.setLongitude(22.2);
-        obj.setOwner("owner");
-        //Backend
-        //RemoteClient client = new RemoteClient(this, "http://scavenger-game.appspot.com");
-        RemoteClient client = new RemoteClient(this, "http://10.0.2.2:8090");
-        client.initObjectivesCreateRequest(obj);*/
-
-/*        RemoteClient client = new RemoteClient(this, "http://10.0.2.2:8090");
-        client.initObjectivesGetRequest();*/
-
-        User user = new User();
-        user.setUserid("us1");
-        Objective objective = new Objective();
-        objective.setObjectiveid("objid1456369553843");
-        RemoteClient client = new RemoteClient(this, "http://10.0.2.2:8090");
-        client.initUserAddObjectiveRequest(user, objective, EObjectiveConfirmedType.LOCATIONCONFIRMED);
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -202,7 +168,9 @@ public class MainActivity extends AppCompatActivity
     public void onPanelExpanded(View panel) {
 //                Toast.makeText(MainActivity.this, "open sesame!", Toast.LENGTH_SHORT).show();
 
-
+        //Backend
+        RemoteClient client = new RemoteClient(this, "http://scavenger-game.appspot.com");
+        client.initObjectivesGetRequest();
     }
 
     @Override
