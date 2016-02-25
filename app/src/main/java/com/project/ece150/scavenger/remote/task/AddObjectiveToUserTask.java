@@ -22,13 +22,11 @@ import java.net.URL;
  */
 public class AddObjectiveToUserTask extends AsyncTask<String, String, Integer> {
 
-    private IUser _user;
-    private IObjective _objective;
+    private String _objectiveid;
     private EObjectiveConfirmedType _objectiveConfirmedType;
 
-    public AddObjectiveToUserTask(IUser user, IObjective objective, EObjectiveConfirmedType type) {
-        _user = user;
-        _objective = objective;
+    public AddObjectiveToUserTask(String objectiveid, EObjectiveConfirmedType type) {
+        _objectiveid = objectiveid;
         _objectiveConfirmedType = type;
     }
 
@@ -59,7 +57,7 @@ public class AddObjectiveToUserTask extends AsyncTask<String, String, Integer> {
 
             Uri.Builder builder = new Uri.Builder()
                     .appendQueryParameter("objectiveType", confirmedTypeStr)
-                    .appendQueryParameter("objectiveId", _objective.getObjectiveid());
+                    .appendQueryParameter("objectiveId", _objectiveid);
             String query = builder.build().getEncodedQuery();
 
             OutputStream os = urlConnection.getOutputStream();
