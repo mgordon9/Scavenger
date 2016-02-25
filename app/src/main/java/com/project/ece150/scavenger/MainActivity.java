@@ -2,6 +2,7 @@ package com.project.ece150.scavenger;
 
 import android.Manifest;
 import android.content.pm.PackageManager;
+import android.graphics.BitmapFactory;
 import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationManager;
@@ -63,6 +64,15 @@ public class MainActivity extends AppCompatActivity
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
+
+        //Backend
+        Objective obj = new Objective();
+        obj.setObjectiveid("objididid1456384118597");
+        RemoteClient client = new RemoteClient(this, "http://scavenger-game.appspot.com");
+        //RemoteClient client = new RemoteClient(this, "http://10.0.2.2:8090");
+        //client.initObjectivesCreateRequest(obj);
+        client.initObjectiveGetRequest(obj);
+
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
@@ -81,13 +91,7 @@ public class MainActivity extends AppCompatActivity
         mLocationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
         mCriteria = new Criteria();
         mProvider = mLocationManager.getBestProvider(mCriteria, true);
-
-//        //Backend
-//        ObjectivesClient client = new ObjectivesClient("http://10.0.2.2:8090/rest/ds");
-////       client.initStoreRequest(new ObjectiveMock());
-//        client.initDataRequest();
-
-
+        
 
         ArrayList<IObjective> data = new ArrayList<IObjective>();
         Objective d0 = new Objective();
@@ -291,10 +295,15 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public void onObjectivesGetReceived(List<IObjective> objectives) {
-        Toast.makeText(MainActivity.this, "update", Toast.LENGTH_SHORT).show();
+        Toast.makeText(MainActivity.this, "update objectives", Toast.LENGTH_SHORT).show();
 
         ObjectiveRecyclerViewAdapter adapter = new ObjectiveRecyclerViewAdapter(objectives, MainActivity.this);
         mRecyclerView.setAdapter(adapter);
         mRecyclerView.invalidate();
+    }
+
+    @Override
+    public void onObjectiveGetReceived(IObjective objective) {
+        Toast.makeText(MainActivity.this, "update objective", Toast.LENGTH_SHORT).show();
     }
 }

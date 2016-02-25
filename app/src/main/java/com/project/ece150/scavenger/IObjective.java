@@ -1,5 +1,7 @@
 package com.project.ece150.scavenger;
 
+import android.graphics.Bitmap;
+
 import java.util.List;
 
 public interface IObjective {
@@ -22,6 +24,7 @@ public interface IObjective {
     String getOwner();
     List<String> otherConfirmedUsers();
 
-    /* TODO: Image of Object */
-    //Image getImage();
+    /* Image of Object */
+    Bitmap getImage();
+    Bitmap getThumbnail();
 }

@@ -1,5 +1,7 @@
 package com.project.ece150.scavenger.mocks;
 
+import android.graphics.Bitmap;
+
 import com.project.ece150.scavenger.IObjective;
 
 import java.util.LinkedList;
@@ -66,6 +68,16 @@ public class ObjectiveMock implements IObjective {
     public List<String> otherConfirmedUsers() {
 
         return _users;
+    }
+
+    @Override
+    public Bitmap getImage() {
+        return null;
+    }
+
+    @Override
+    public Bitmap getThumbnail() {
+        return null;
     }
 
     public String toString() {

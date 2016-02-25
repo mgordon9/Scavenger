@@ -51,19 +51,8 @@ public class CreateObjectiveTask extends AsyncTask<String, String, Integer> {
             urlConnection.setRequestProperty("Accept", "application/json");
             urlConnection.setRequestProperty("Content-Type", "application/json");
 
-            JSONObject jObjective = new JSONObject();
-            try {
-                jObjective.put("keyname", _objective.getObjectiveid());
-                jObjective.put("title", _objective.getTitle());
-                jObjective.put("info", _objective.getInfo());
-                jObjective.put("latitude", _objective.getLatitude());
-                jObjective.put("longitude", _objective.getLongitude());
-                jObjective.put("owner", _objective.getOwner());
-                jObjective.put("otherConfirmedUsers", "<tbd>");
-                jObjective.put("activity", "<tbd>");
-            } catch(Exception e) {
-                e.printStackTrace();
-            }
+            JSONObject jObjective = _parser.parseObjectiveToJSON(_objective);
+
             String sObjective = jObjective.toString();
             byte[] postData = sObjective.getBytes( StandardCharsets.UTF_8 );
 

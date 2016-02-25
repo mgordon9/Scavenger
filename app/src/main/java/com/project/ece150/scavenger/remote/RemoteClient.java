@@ -7,8 +7,10 @@ import com.project.ece150.scavenger.remote.parser.ObjectiveParser;
 import com.project.ece150.scavenger.remote.parser.UserParser;
 import com.project.ece150.scavenger.remote.task.AddObjectiveToUserTask;
 import com.project.ece150.scavenger.remote.task.CreateUserTask;
+import com.project.ece150.scavenger.remote.task.GetObjectiveTask;
 import com.project.ece150.scavenger.remote.task.GetObjectivesTask;
 import com.project.ece150.scavenger.remote.task.GetUserTask;
+import com.project.ece150.scavenger.remote.task.IGetObjectiveTaskObserver;
 import com.project.ece150.scavenger.remote.task.IGetObjectivesTaskObserver;
 import com.project.ece150.scavenger.remote.task.IGetUserTaskObserver;
 import com.project.ece150.scavenger.remote.task.CreateObjectiveTask;
@@ -18,7 +20,7 @@ import java.util.List;
 /**
  * This Object stores/receives entities.
  */
-public class RemoteClient implements IGetUserTaskObserver, IGetObjectivesTaskObserver {
+public class RemoteClient implements IGetUserTaskObserver, IGetObjectivesTaskObserver, IGetObjectiveTaskObserver {
 
     private IRemoteClientObserver _observer;
     private UserParser _userParser;
@@ -60,6 +62,11 @@ public class RemoteClient implements IGetUserTaskObserver, IGetObjectivesTaskObs
         task.execute(_resourceURI + "/rest/objectives");
     }
 
+    public void initObjectiveGetRequest(IObjective objective) {
+        GetObjectiveTask task = new GetObjectiveTask(this, _objectiveParser);
+        task.execute(_resourceURI + "/rest/objectives/" + objective.getObjectiveid());
+    }
+
     public void initObjectivesCreateRequest(IObjective objective) {
         CreateObjectiveTask task = new CreateObjectiveTask(_objectiveParser, objective);
         task.execute(_resourceURI + "/rest/objectives");
@@ -76,5 +83,10 @@ public class RemoteClient implements IGetUserTaskObserver, IGetObjectivesTaskObs
     @Override
     public void onObjectivesGetReceived(List<IObjective> objectives) {
         _observer.onObjectivesGetReceived(objectives);
+    }
+
+    @Override
+    public void onObjectiveGetReceived(IObjective objective) {
+        _observer.onObjectiveGetReceived(objective);
     }
 }

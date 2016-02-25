@@ -1,5 +1,7 @@
 package com.project.ece150.scavenger;
  
+import android.graphics.Bitmap;
+
 import java.io.StringBufferInputStream;
 import java.util.List;
  
@@ -14,6 +16,8 @@ public class Objective implements IObjective {
     private boolean _isVisitedVisual;
     private String _owner;
     private List<String> _otherConfirmedUsers;
+    private Bitmap _image;
+    private Bitmap _thumbnail;
 
     @Override
     public String getObjectiveid() { return _objectiveid; }
@@ -87,7 +91,25 @@ public class Objective implements IObjective {
     public List<String> otherConfirmedUsers() {
         return _otherConfirmedUsers;
     }
- 
+
+    @Override
+    public Bitmap getImage() {
+        return _image;
+    }
+
+    public void setImage(Bitmap image) {
+        _image = image;
+    }
+
+    @Override
+    public Bitmap getThumbnail() {
+        return _thumbnail;
+    }
+
+    public void setThumbnail(Bitmap thumbnail) {
+        _thumbnail = thumbnail;
+    }
+
     public void setOtherConfirmedUsers(List<String> otherConfirmedUsers) {
         _otherConfirmedUsers = otherConfirmedUsers;
     }
