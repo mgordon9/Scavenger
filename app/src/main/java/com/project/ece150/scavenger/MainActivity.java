@@ -2,7 +2,6 @@ package com.project.ece150.scavenger;
 
 import android.Manifest;
 import android.content.pm.PackageManager;
-import android.graphics.BitmapFactory;
 import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationManager;
@@ -10,6 +9,9 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -24,35 +26,23 @@ import android.widget.Toast;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
-import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.UiSettings;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
-import com.project.ece150.scavenger.mocks.ObjectiveMock;
 import com.project.ece150.scavenger.remote.IRemoteClientObserver;
 import com.project.ece150.scavenger.remote.RemoteClient;
 import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Observable;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener,
-        OnMapReadyCallback,
-        GoogleMap.OnMyLocationButtonClickListener,
         ObjectivesFragment.OnListFragmentInteractionListener,
         IRemoteClientObserver,
         SlidingUpPanelLayout.PanelSlideListener{
 
-    private static final int MY_LOCATION_PERMISSION_REQUEST_CODE = 1;
 
-    private GoogleMap mMap;
-    private UiSettings mUiSettings;
-
-    LocationManager mLocationManager;
-    Criteria mCriteria;
-    String mProvider;
     SlidingUpPanelLayout mLayout;
     RecyclerView mRecyclerView;
 
@@ -64,15 +54,6 @@ public class MainActivity extends AppCompatActivity
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-
-        //Backend
-        Objective obj = new Objective();
-        obj.setObjectiveid("objididid1456384118597");
-        RemoteClient client = new RemoteClient(this, "http://scavenger-game.appspot.com");
-        //RemoteClient client = new RemoteClient(this, "http://10.0.2.2:8090");
-        //client.initObjectivesCreateRequest(obj);
-        client.initObjectiveGetRequest(obj);
-
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
@@ -82,16 +63,6 @@ public class MainActivity extends AppCompatActivity
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION}, MY_LOCATION_PERMISSION_REQUEST_CODE);
-        } else {
-            startMap();
-        }
-
-        mLocationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
-        mCriteria = new Criteria();
-        mProvider = mLocationManager.getBestProvider(mCriteria, true);
-        
 
         ArrayList<IObjective> data = new ArrayList<IObjective>();
         Objective d0 = new Objective();
@@ -193,9 +164,9 @@ public class MainActivity extends AppCompatActivity
     }
 
     private void startMap() {
-        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
+/*        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
-        mapFragment.getMapAsync(this);
+        mapFragment.getMapAsync(this);*/
     }
 
     @Override
@@ -214,18 +185,20 @@ public class MainActivity extends AppCompatActivity
         // Handle navigation view item clicks here.
         int id = item.getItemId();
 
-        if (id == R.id.nav_camera) {
-            // Handle the camera action
-        } else if (id == R.id.nav_gallery) {
+        Fragment fragment = null;
+        if(id == R.id.nav_map) {
+            fragment = new MapFragment(this);
+        } else if (id == R.id.nav_completedobjectives) {
+            fragment = new CompletedObjectivesFragment();
+        } else if (id == R.id.nav_createobjective) {
+            fragment = new CreateObjectiveFragment();
+        }
 
-        } else if (id == R.id.nav_slideshow) {
-
-        } else if (id == R.id.nav_manage) {
-
-        } else if (id == R.id.nav_share) {
-
-        } else if (id == R.id.nav_send) {
-
+        if (fragment != null) {
+            FragmentManager fragmentManager = getSupportFragmentManager();
+            FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+            fragmentTransaction.replace(R.id.container_body, fragment);
+            fragmentTransaction.commit();
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -233,64 +206,23 @@ public class MainActivity extends AppCompatActivity
         return true;
     }
 
-    /**
-     *
-     */
-    @Override
-    public void onMapReady(GoogleMap googleMap) {
-        mMap = googleMap;
-
-        Location location = mLocationManager.getLastKnownLocation(mProvider);
-
-        LatLng currentPos = new LatLng(location.getLatitude(), location.getLongitude());
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(currentPos));
-        mMap.animateCamera(CameraUpdateFactory.zoomTo(16.0f));
-
-        mMap.setOnMyLocationButtonClickListener(this);
-        mUiSettings = mMap.getUiSettings();
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION}, MY_LOCATION_PERMISSION_REQUEST_CODE);
-        } else {
-            mMap.setMyLocationEnabled(true);
-        }
-
-    }
-
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        switch (requestCode) {
-            case MY_LOCATION_PERMISSION_REQUEST_CODE: {
-                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    startMap();
-                } else {
-                    finish();
-                }
-            }
-        }
-    }
-
-    @Override
-    public boolean onMyLocationButtonClick() {
-        return false;
-    }
-
     @Override
     public void onListFragmentInteraction(IObjective item) {
         //TODO: slide the panel down and zoom to chosen scavenger location
 //        Toast.makeText(this, "Clicked it!", Toast.LENGTH_SHORT).show();
 
-        mMap.clear();
+/*        mMap.clear();
         mLayout.setPanelState(SlidingUpPanelLayout.PanelState.COLLAPSED);
 
         LatLng objectivePos = new LatLng(item.getLatitude(), item.getLongitude());
         mMap.addMarker(new MarkerOptions().position(objectivePos).title(item.getTitle()));
         mMap.moveCamera(CameraUpdateFactory.newLatLng(objectivePos));
-        mMap.animateCamera(CameraUpdateFactory.zoomTo(16.0f));
+        mMap.animateCamera(CameraUpdateFactory.zoomTo(16.0f));*/
     }
 
     @Override
     public void onUserGetReceived(IUser user) {
-
+        Toast.makeText(MainActivity.this, "update users", Toast.LENGTH_SHORT).show();
     }
 
     @Override
