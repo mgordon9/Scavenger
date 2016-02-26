@@ -42,14 +42,19 @@ public class MainActivity extends AppCompatActivity
         IRemoteClientObserver,
         SlidingUpPanelLayout.PanelSlideListener{
 
+    RemoteClient mRemoteClient;
+    LocationClient mLocationClient;
 
     SlidingUpPanelLayout mLayout;
     RecyclerView mRecyclerView;
 
-
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        
+        mRemoteClient = new RemoteClient(this, "http://scavenger-game.appspot.com");
+        mLocationClient = new LocationClient(this);
+
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -186,12 +191,14 @@ public class MainActivity extends AppCompatActivity
         int id = item.getItemId();
 
         Fragment fragment = null;
+
         if(id == R.id.nav_map) {
             fragment = new MapFragment(this);
         } else if (id == R.id.nav_completedobjectives) {
             fragment = new CompletedObjectivesFragment();
         } else if (id == R.id.nav_createobjective) {
             fragment = new CreateObjectiveFragment();
+            ((CreateObjectiveFragment) fragment).initialize(mRemoteClient, mLocationClient);
         }
 
         if (fragment != null) {

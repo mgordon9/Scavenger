@@ -85,7 +85,8 @@ public class ObjectiveParser {
             jObjective.put("activity", "<tbd>");
 
             // parse image
-            jObjective.put("image", parseBitmapToString(objective.getImage()));
+            Bitmap fullimage = resize(objective.getImage(), 700, 700);
+            jObjective.put("image", parseBitmapToString(fullimage));
 
             // resize and parse image to thumbnail
             Bitmap thumbnail = resize(objective.getImage(), 50, 50);
