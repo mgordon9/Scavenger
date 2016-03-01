@@ -52,7 +52,8 @@ public class MainActivity extends AppCompatActivity
     protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         
-        mRemoteClient = new RemoteClient(this, "http://scavenger-game.appspot.com");
+        mRemoteClient = new RemoteClient("http://scavenger-game.appspot.com");
+        mRemoteClient.registerObserver(this);
         mLocationClient = new LocationClient(this);
 
         setContentView(R.layout.activity_main);
@@ -149,7 +150,8 @@ public class MainActivity extends AppCompatActivity
 //                Toast.makeText(MainActivity.this, "open sesame!", Toast.LENGTH_SHORT).show();
 
         //Backend
-        RemoteClient client = new RemoteClient(this, "http://scavenger-game.appspot.com");
+        RemoteClient client = new RemoteClient("http://scavenger-game.appspot.com");
+        client.registerObserver(this);
         client.initObjectivesGetRequest();
     }
 
