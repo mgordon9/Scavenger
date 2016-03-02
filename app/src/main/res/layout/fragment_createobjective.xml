@@ -1,30 +1,73 @@
+<!-- The Fragment view for posting a new Objective -->
+
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context="info.androidhive.materialdesign.activity.CreateObjectiveFragment">
+    tools:context="com.project.ece150.scavenger.CreateObjectiveFragment">
 
+    <!-- Spacing for top bar-->
+    <Space
+        android:id="@+id/space"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:layout_alignParentTop="true" />
 
-    <TextView
-        android:id="@+id/label"
-        android:layout_alignParentTop="true"
-        android:layout_marginTop="100dp"
+    <!-- Image View -->
+    <ImageView
+        android:layout_height="fill_parent"
+        android:layout_width="fill_parent"
+        android:visibility="visible"
+        android:id="@+id/imageView"
+        android:layout_below="@+id/space" />
+
+    <!-- Text input fields -->
+    <EditText
+        android:id="@+id/editTextTitle"
+        android:hint="Title"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:gravity="center_horizontal"
-        android:textSize="45dp"
-        android:text="CREATE OBJECTIVE FRAGMENT"
-        android:textStyle="bold"/>
 
-    <TextView
-        android:layout_below="@id/label"
-        android:layout_centerInParent="true"
+        android:textSize="18dp"
+        android:textStyle="bold"
+        android:textColor="#ffffff"
+        android:background="#64000000"
+        android:gravity="center_horizontal"
+
+        android:inputType="textMultiLine"
+        android:ems="10"
+        android:lines="1"
+        android:layout_below="@+id/space" />
+
+    <EditText
+        android:id="@+id/editTextDescription"
+        android:hint="Description"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:textSize="12dp"
-        android:layout_marginTop="10dp"
+
+        android:textSize="18dp"
+        android:textColor="#ffffff"
+        android:background="#64000000"
         android:gravity="center_horizontal"
-        android:text="Create Form comes here soon!" />
+
+        android:inputType="textMultiLine"
+        android:ems="10"
+        android:lines="2"
+        android:layout_below="@id/editTextTitle" />
+
+    <!-- Submit button -->
+    <Button
+        android:id="@+id/buttonSubmit"
+        android:text="SUBMIT"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+
+        android:textSize="18dp"
+        android:textColor="#ffffff"
+        android:background="#64000000"
+
+        style="?android:attr/borderlessButtonStyle"
+        android:layout_below="@id/editTextDescription" />
 
 </RelativeLayout>

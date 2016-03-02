@@ -15,6 +15,7 @@ import com.project.ece150.scavenger.remote.task.IGetObjectivesTaskObserver;
 import com.project.ece150.scavenger.remote.task.IGetUserTaskObserver;
 import com.project.ece150.scavenger.remote.task.CreateObjectiveTask;
 
+import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -22,16 +23,21 @@ import java.util.List;
  */
 public class RemoteClient implements IGetUserTaskObserver, IGetObjectivesTaskObserver, IGetObjectiveTaskObserver {
 
-    private IRemoteClientObserver _observer;
+    private List<IRemoteClientObserver> _observers;
     private UserParser _userParser;
     private ObjectiveParser _objectiveParser;
     private String _resourceURI;
 
-    public RemoteClient(IRemoteClientObserver observer, String resourceUrl) {
-        _observer = observer;
+    public RemoteClient(String resourceUrl) {
         _userParser = new UserParser();
         _objectiveParser = new ObjectiveParser();
         _resourceURI = resourceUrl;
+
+        _observers = new LinkedList<IRemoteClientObserver>();
+    }
+
+    public void registerObserver(IRemoteClientObserver observer) {
+        _observers.add(observer);
     }
 
     /**
@@ -104,16 +110,22 @@ public class RemoteClient implements IGetUserTaskObserver, IGetObjectivesTaskObs
      */
     @Override
     public void onUserGetReceived(IUser user) {
-        _observer.onUserGetReceived(user);
+        for(IRemoteClientObserver observer : _observers) {
+            observer.onUserGetReceived(user);
+        }
     }
 
     @Override
     public void onObjectivesGetReceived(List<IObjective> objectives) {
-        _observer.onObjectivesGetReceived(objectives);
+        for(IRemoteClientObserver observer : _observers) {
+            observer.onObjectivesGetReceived(objectives);
+        }
     }
 
     @Override
     public void onObjectiveGetReceived(IObjective objective) {
-        _observer.onObjectiveGetReceived(objective);
+        for(IRemoteClientObserver observer : _observers) {
+            observer.onObjectiveGetReceived(objective);
+        }
     }
 }
