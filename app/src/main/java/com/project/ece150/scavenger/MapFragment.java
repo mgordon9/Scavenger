@@ -1,7 +1,6 @@
 package com.project.ece150.scavenger;
 
 import android.Manifest;
-import android.content.Context;
 import android.content.pm.PackageManager;
 import android.location.Criteria;
 import android.location.Location;
@@ -9,12 +8,12 @@ import android.location.LocationManager;
 import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -22,8 +21,12 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.UiSettings;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MarkerOptions;
+import com.project.ece150.scavenger.remote.IRemoteClientObserver;
+import com.project.ece150.scavenger.remote.RemoteClient;
 import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 
+import java.util.ArrayList;
 import java.util.List;
 
 
@@ -31,11 +34,11 @@ public class MapFragment extends Fragment
         implements OnMapReadyCallback,
         GoogleMap.OnMyLocationButtonClickListener,
         SlidingUpPanelLayout.PanelSlideListener,
-        ObjectivesFragment.OnListFragmentInteractionListener {
+        ObjectivesFragment.OnListFragmentInteractionListener,
+        IRemoteClientObserver {
 
     private static final int MY_LOCATION_PERMISSION_REQUEST_CODE = 1;
 
-    private Context mContext;
     private GoogleMap mMap;
     private LocationManager mLocationManager;
     private Criteria mCriteria;
@@ -43,64 +46,47 @@ public class MapFragment extends Fragment
     private UiSettings mUiSettings;
     SlidingUpPanelLayout mLayout;
     RecyclerView mRecyclerView;
+    RemoteClient mClient = new RemoteClient("http://scavenger-game.appspot.com");
+    private boolean scavengerHuntActive;
 
     public MapFragment()
     {
     }
 
-//    public MapFragment(Context context) {
-//        mContext = context;
-//    }
-
-    @Override
-    public void onCreate(Bundle savedIntanceState)
-    {
-
-    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        mLocationManager = (LocationManager) mContext.getSystemService(mContext.LOCATION_SERVICE);
+        mLocationManager = (LocationManager) getActivity().getSystemService(getActivity().LOCATION_SERVICE);
         mCriteria = new Criteria();
         mProvider = mLocationManager.getBestProvider(mCriteria, true);
 
+        mClient.registerObserver(this);
 
         View view = (RelativeLayout) inflater.inflate(R.layout.fragment_map, container, false);
 
-        startMap();
+        ArrayList<IObjective> data = new ArrayList<IObjective>();
+        mRecyclerView = (RecyclerView) view.findViewById(R.id.list);
+        PickObjectiveRecyclerViewAdapter adapter = new PickObjectiveRecyclerViewAdapter(data, this);
 
-//        ArrayList<IObjective> data = new ArrayList<IObjective>();
-//        Objective d0 = new Objective();
-//        d0.setInfo("info 0");
-//        d0.setOwner("Matthew");
-//        Objective d1 = new Objective();
-//        d1.setInfo("info 1");
-//        d1.setOwner("Matthew");
-//        data.add(d0);
-//        data.add(d1);
-//
-//        RecyclerView mRecyclerView = (RecyclerView) getView().findViewById(R.id.list);
-//        ObjectiveRecyclerViewAdapter adapter = new ObjectiveRecyclerViewAdapter(data, this);
-//
-//        mRecyclerView.setAdapter(adapter);
-//
-//        mLayout = (SlidingUpPanelLayout) getView().findViewById(R.id.sliding_layout);
-//        mLayout.setPanelSlideListener(this);
+        mRecyclerView.setAdapter(adapter);
 
-
+        mLayout = (SlidingUpPanelLayout) view.findViewById(R.id.sliding_layout);
+        mLayout.setPanelSlideListener(this);
 
         return view;
-
     }
 
-//    @Override
-//    public void onViewCreated(View view, Bundle savedInstanceState)
-//    {
-//
-//    }
+    @Override
+    public void onViewCreated(View view, Bundle savedInstanceState)
+    {
+        startMap();
+        scavengerHuntActive = false;
+        TextView panelTitle = (TextView) getView().findViewById(R.id.slide_panel_title);
+        panelTitle.setText("Find Objectives Near You");
+    }
 
 
     @Override
@@ -109,15 +95,28 @@ public class MapFragment extends Fragment
 
     @Override
     public void onPanelExpanded(View panel) {
-//                Toast.makeText(MainActivity.this, "open sesame!", Toast.LENGTH_SHORT).show();
-
-//        //Backend
-//        RemoteClient client = new RemoteClient(this, "http://scavenger-game.appspot.com");
-//        client.initObjectivesGetRequest();
+        //Backend
+        if(!scavengerHuntActive) {
+            mClient.initObjectivesGetRequest();
+            TextView panelTitle = (TextView) getView().findViewById(R.id.slide_panel_title);
+            panelTitle.setText("Available Objectives");
+        }
+        else {
+            TextView panelTitle = (TextView) getView().findViewById(R.id.slide_panel_title);
+            panelTitle.setText("Current Objective");
+        }
     }
 
     @Override
     public void onPanelCollapsed(View panel) {
+        if(!scavengerHuntActive){
+            TextView panelTitle = (TextView) getView().findViewById(R.id.slide_panel_title);
+            panelTitle.setText("Find Objectives Near You");
+        }
+        else {
+            TextView panelTitle = (TextView) getView().findViewById(R.id.slide_panel_title);
+            panelTitle.setText("Scavenger Hunt Active");
+        }
 
     }
 
@@ -131,30 +130,11 @@ public class MapFragment extends Fragment
 
     }
 
-//    @Override
-//    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-//                             Bundle savedInstanceState) {
-//        View rootView = inflater.inflate(R.layout.fragment_map, container, false);
-//
-//        // Inflate the layout for this fragment
-//        return rootView;
-//    }
-
-//    @Override
-//    public void onAttach(Activity activity) {
-//        super.onAttach(activity);
-//    }
-//
-//    @Override
-//    public void onDetach() {
-//        super.onDetach();
-//    }
-
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
 
-        if (ActivityCompat.checkSelfPermission(mContext, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(mContext, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+        if (ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             // TODO: Consider calling
             //    ActivityCompat#requestPermissions
             // here to request the missing permissions, and then overriding
@@ -180,29 +160,39 @@ public class MapFragment extends Fragment
     }
 
     private void startMap() {
-        FragmentManager fm = MainActivity.fragmentManager;
-        SupportMapFragment mapFragment = (SupportMapFragment) MainActivity.fragmentManager
+        SupportMapFragment mapFragment = (SupportMapFragment) getChildFragmentManager()
                         .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
     }
 
     @Override
     public void onListFragmentInteraction(IObjective item) {
-        //TODO: call API for Objective
-//        Toast.makeText(this, "Clicked it!", Toast.LENGTH_SHORT).show();
-
-/*        mMap.clear();
-        mLayout.setPanelState(SlidingUpPanelLayout.PanelState.COLLAPSED);
-
+        mMap.clear();
         LatLng objectivePos = new LatLng(item.getLatitude(), item.getLongitude());
         mMap.addMarker(new MarkerOptions().position(objectivePos).title(item.getTitle()));
         mMap.moveCamera(CameraUpdateFactory.newLatLng(objectivePos));
-        mMap.animateCamera(CameraUpdateFactory.zoomTo(16.0f));*/
+        mMap.animateCamera(CameraUpdateFactory.zoomTo(16.0f));
+
+        scavengerHuntActive = true;
+        mLayout.setPanelState(SlidingUpPanelLayout.PanelState.COLLAPSED);
+        mClient.initObjectiveGetRequest(item.getObjectiveid());
     }
 
-    public void updateObjectiveCoordinates(List<IObjective> objectives)
-    {
-        ObjectiveRecyclerViewAdapter adapter = new ObjectiveRecyclerViewAdapter(objectives, this);
+    @Override
+    public void onUserGetReceived(IUser user) {
+
+    }
+
+    @Override
+    public void onObjectivesGetReceived(List<IObjective> objectives) {
+        PickObjectiveRecyclerViewAdapter adapter = new PickObjectiveRecyclerViewAdapter(objectives, this);
+        mRecyclerView.setAdapter(adapter);
+        mRecyclerView.invalidate();
+    }
+
+    @Override
+    public void onObjectiveGetReceived(IObjective objective) {
+        ActiveObjectiveRecyclerViewAdapter adapter = new ActiveObjectiveRecyclerViewAdapter(objective);
         mRecyclerView.setAdapter(adapter);
         mRecyclerView.invalidate();
     }

@@ -66,7 +66,7 @@ public class ObjectivesFragment extends Fragment {
             } else {
                 recyclerView.setLayoutManager(new GridLayoutManager(context, mColumnCount));
             }
-            recyclerView.setAdapter(new ObjectiveRecyclerViewAdapter(new ArrayList<IObjective>(), mListener));
+            recyclerView.setAdapter(new PickObjectiveRecyclerViewAdapter(new ArrayList<IObjective>(), mListener));
         }
         return view;
     }

@@ -25,10 +25,10 @@ sothree:umanoShadowHeight="4dp">
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:gravity="left"
-    android:text="View Objectives Near You"
     android:textColor="@color/text_primary"
-    android:textSize="16sp"
-    android:background="@color/colorPrimary"/>
+    android:textSize="20sp"
+    android:background="@color/colorPrimary"
+    android:id="@+id/slide_panel_title"/>
 
     <include
         layout="@layout/fragment_objective_list"
