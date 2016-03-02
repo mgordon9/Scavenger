@@ -71,7 +71,7 @@ public class MainActivity extends AppCompatActivity
 
         if(id == R.id.nav_map){
             fragment = new MapFragment();
-            mRemoteClient.registerObserver((IRemoteClientObserver)fragment);
+            ((MapFragment)fragment).initialize(mRemoteClient);
         } else if (id == R.id.nav_completedobjectives) {
             fragment = new CompletedObjectivesFragment();
         } else if (id == R.id.nav_createobjective) {

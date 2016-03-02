@@ -46,11 +46,17 @@ public class MapFragment extends Fragment
     private UiSettings mUiSettings;
     SlidingUpPanelLayout mLayout;
     RecyclerView mRecyclerView;
-    RemoteClient mClient = new RemoteClient("http://scavenger-game.appspot.com");
+    RemoteClient mClient;
     private boolean scavengerHuntActive;
 
     public MapFragment()
     {
+    }
+
+    public void initialize(RemoteClient remoteClient)
+    {
+        mClient = remoteClient;
+        mClient.registerObserver(this);
     }
 
 
@@ -63,14 +69,10 @@ public class MapFragment extends Fragment
         mCriteria = new Criteria();
         mProvider = mLocationManager.getBestProvider(mCriteria, true);
 
-        mClient.registerObserver(this);
-
         View view = (RelativeLayout) inflater.inflate(R.layout.fragment_map, container, false);
-
         ArrayList<IObjective> data = new ArrayList<IObjective>();
         mRecyclerView = (RecyclerView) view.findViewById(R.id.list);
         PickObjectiveRecyclerViewAdapter adapter = new PickObjectiveRecyclerViewAdapter(data, this);
-
         mRecyclerView.setAdapter(adapter);
 
         mLayout = (SlidingUpPanelLayout) view.findViewById(R.id.sliding_layout);
