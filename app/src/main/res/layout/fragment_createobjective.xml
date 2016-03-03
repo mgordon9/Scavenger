@@ -7,20 +7,12 @@
     android:orientation="vertical"
     tools:context="com.project.ece150.scavenger.CreateObjectiveFragment">
 
-    <!-- Spacing for top bar-->
-    <Space
-        android:id="@+id/space"
-        android:layout_width="match_parent"
-        android:layout_height="?attr/actionBarSize"
-        android:layout_alignParentTop="true" />
-
     <!-- Image View -->
     <ImageView
         android:layout_height="fill_parent"
         android:layout_width="fill_parent"
         android:visibility="visible"
-        android:id="@+id/imageView"
-        android:layout_below="@+id/space" />
+        android:id="@+id/imageView" />
 
     <!-- Text input fields -->
     <EditText
@@ -37,8 +29,7 @@
 
         android:inputType="textMultiLine"
         android:ems="10"
-        android:lines="1"
-        android:layout_below="@+id/space" />
+        android:lines="1" />
 
     <EditText
         android:id="@+id/editTextDescription"
@@ -65,7 +56,7 @@
 
         android:textSize="18dp"
         android:textColor="#ffffff"
-        android:background="#64000000"
+        android:background="#a7ff0000"
 
         style="?android:attr/borderlessButtonStyle"
         android:layout_below="@id/editTextDescription" />
