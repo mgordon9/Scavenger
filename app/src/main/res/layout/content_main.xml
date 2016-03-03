@@ -17,5 +17,6 @@
     <FrameLayout
         android:id="@+id/container_body"
         android:layout_width="fill_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="match_parent"
+        android:layout_below="@+id/space" />
 </RelativeLayout>

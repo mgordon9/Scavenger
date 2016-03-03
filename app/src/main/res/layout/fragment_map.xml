@@ -13,7 +13,11 @@
         android:name="com.google.android.gms.maps.SupportMapFragment"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_below="@+id/space"
-        tools:context="com.project.ece150.myapplication.MapFragment" />
+        tools:context="com.google.android.gms.maps.MapFragment" />
+
+    <include
+        layout="@layout/slide_up_panel"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
 
 </RelativeLayout>

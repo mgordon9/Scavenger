@@ -31,3 +31,4 @@ dependencies {
     compile 'com.sothree.slidinguppanel:library:3.2.1'
 }
 
+apply plugin: 'com.google.gms.google-services'
