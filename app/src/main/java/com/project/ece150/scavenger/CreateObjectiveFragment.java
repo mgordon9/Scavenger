@@ -30,6 +30,8 @@ public class CreateObjectiveFragment extends Fragment {
 
     static final int REQUEST_IMAGE_CAPTURE = 1;
 
+    String mAccountName;
+
     RemoteClient mRemoteClient;
     LocationClient mLocationClient;
 
@@ -41,9 +43,10 @@ public class CreateObjectiveFragment extends Fragment {
     public CreateObjectiveFragment() {
     }
 
-    public void initialize(RemoteClient remoteClient, LocationClient locationClient) {
+    public void initialize(RemoteClient remoteClient, LocationClient locationClient, String accountName) {
         mRemoteClient = remoteClient;
         mLocationClient = locationClient;
+        mAccountName = accountName;
     }
 
     @Override
@@ -151,19 +154,19 @@ public class CreateObjectiveFragment extends Fragment {
 
         objective.setObjectiveid("apptest");
 
-        EditText title = (EditText)getView().findViewById(R.id.editTextTitle);
+        EditText title = (EditText) getView().findViewById(R.id.editTextTitle);
         objective.setTitle(title.getText().toString());
 
         EditText description = (EditText)getView().findViewById(R.id.editTextDescription);
         objective.setInfo(description.getText().toString());
-
-        objective.setOwner("<tbd>");
 
         Double latitude = mLocationClient.getCurrentPosition().latitude;
         objective.setLatitude(latitude);
 
         Double longitude = mLocationClient.getCurrentPosition().longitude;
         objective.setLongitude(longitude);
+
+        objective.setOwner(mAccountName);
 
         objective.setImage(image);
 

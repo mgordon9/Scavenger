@@ -1,6 +1,8 @@
 package com.project.ece150.scavenger;
 
 import android.Manifest;
+import android.accounts.AccountManager;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Criteria;
 import android.location.Location;
@@ -19,10 +21,13 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
 
+import com.google.android.gms.auth.GoogleAuthUtil;
+import com.google.android.gms.common.AccountPicker;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -33,6 +38,8 @@ import com.project.ece150.scavenger.remote.IRemoteClientObserver;
 import com.project.ece150.scavenger.remote.RemoteClient;
 import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 
+import org.opencv.android.OpenCVLoader;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -41,6 +48,10 @@ public class MainActivity extends AppCompatActivity
         ObjectivesFragment.OnListFragmentInteractionListener,
         IRemoteClientObserver,
         SlidingUpPanelLayout.PanelSlideListener{
+
+    static final int PICK_ACCOUNT_REQUEST = 1002;
+
+    String mAccountName;
 
     RemoteClient mRemoteClient;
     LocationClient mLocationClient;
@@ -51,7 +62,16 @@ public class MainActivity extends AppCompatActivity
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        
+
+        // Check for OpenCV
+        if (!OpenCVLoader.initDebug()) {
+            Log.e(this.getClass().getSimpleName(), "  OpenCVLoader.initDebug(), not working.");
+        } else {
+            Log.d(this.getClass().getSimpleName(), "  OpenCVLoader.initDebug(), working.");
+        }
+
+        showGoogleAccountPicker();
+
         mRemoteClient = new RemoteClient("http://scavenger-game.appspot.com");
         mRemoteClient.registerObserver(this);
         mLocationClient = new LocationClient(this);
@@ -200,7 +220,7 @@ public class MainActivity extends AppCompatActivity
             fragment = new CompletedObjectivesFragment();
         } else if (id == R.id.nav_createobjective) {
             fragment = new CreateObjectiveFragment();
-            ((CreateObjectiveFragment) fragment).initialize(mRemoteClient, mLocationClient);
+            ((CreateObjectiveFragment) fragment).initialize(mRemoteClient, mLocationClient, mAccountName);
         }
 
         if (fragment != null) {
@@ -246,5 +266,34 @@ public class MainActivity extends AppCompatActivity
     @Override
     public void onObjectiveGetReceived(IObjective objective) {
         Toast.makeText(MainActivity.this, "update objective", Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        switch (requestCode) {
+            case PICK_ACCOUNT_REQUEST:
+                if (resultCode == RESULT_OK) {
+                    mAccountName = data.getStringExtra(
+                            AccountManager.KEY_ACCOUNT_NAME);
+
+                    createUserIfNeccessary(mAccountName);
+                } else if (resultCode == RESULT_CANCELED) {
+                    Toast.makeText(this, "This application requires a Google account.",
+                            Toast.LENGTH_SHORT).show();
+                    finish();
+                }
+                return;
+        }
+        super.onActivityResult(requestCode, resultCode, data);
+    }
+
+    private void showGoogleAccountPicker() {
+        Intent googlePicker = AccountPicker.newChooseAccountIntent(null, null,
+                new String[]{GoogleAuthUtil.GOOGLE_ACCOUNT_TYPE}, true, null, null, null, null);
+        startActivityForResult(googlePicker, PICK_ACCOUNT_REQUEST);
+    }
+
+    private void createUserIfNeccessary(String accountName) {
+        mRemoteClient.initUserCreateRequest(accountName);
     }
 }
