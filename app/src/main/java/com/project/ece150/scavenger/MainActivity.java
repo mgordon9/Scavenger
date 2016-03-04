@@ -12,6 +12,7 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.MenuItem;
 import android.widget.Toast;
 
@@ -19,6 +20,8 @@ import com.google.android.gms.auth.GoogleAuthUtil;
 import com.google.android.gms.common.AccountPicker;
 import com.project.ece150.scavenger.remote.IRemoteClientObserver;
 import com.project.ece150.scavenger.remote.RemoteClient;
+
+import org.opencv.android.OpenCVLoader;
 
 import java.util.List;
 
@@ -32,12 +35,23 @@ public class MainActivity extends AppCompatActivity
 
     RemoteClient mRemoteClient;
     LocationClient mLocationClient;
-    public static FragmentManager fragmentManager;
 
+    MapFragment mMapFragment;
+    CompletedObjectivesFragment mCompletedObjectivesFragment;
+    CreateObjectiveFragment mCreateObjectiveFragment;
+
+    public static FragmentManager fragmentManager;
 
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        // Check for OpenCV
+        if (!OpenCVLoader.initDebug()) {
+            Log.e(this.getClass().getSimpleName(), "  OpenCVLoader.initDebug(), not working.");
+        } else {
+            Log.d(this.getClass().getSimpleName(), "  OpenCVLoader.initDebug(), working.");
+        }
 
         showGoogleAccountPicker();
 
@@ -59,6 +73,10 @@ public class MainActivity extends AppCompatActivity
         navigationView.setNavigationItemSelectedListener(this);
 
         fragmentManager = getSupportFragmentManager();
+
+        // Select Map View as Default.
+        Fragment fragment = getMapFragment();
+        selectFragment(fragment);
     }
 
     @Override
@@ -80,24 +98,15 @@ public class MainActivity extends AppCompatActivity
         Fragment fragment = null;
 
         if(id == R.id.nav_map){
-            fragment = new MapFragment();
-            ((MapFragment)fragment).initialize(mRemoteClient);
+            fragment = getMapFragment();
         } else if (id == R.id.nav_completedobjectives) {
-            fragment = new CompletedObjectivesFragment();
+            fragment = getCompletedObjectivesFragment();
         } else if (id == R.id.nav_createobjective) {
-            fragment = new CreateObjectiveFragment();
-            ((CreateObjectiveFragment) fragment).initialize(mRemoteClient, mLocationClient, mAccountName);
+            fragment = getCreateObjectiveFragment();
         }
 
-        if (fragment != null) {
-            FragmentManager fragmentManager = getSupportFragmentManager();
-            FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-            fragmentTransaction.replace(R.id.container_body, fragment);
-            fragmentTransaction.commit();
-        }
+        selectFragment(fragment);
 
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        drawer.closeDrawer(GravityCompat.START);
         return true;
     }
 
@@ -143,5 +152,43 @@ public class MainActivity extends AppCompatActivity
 
     private void createUserIfNeccessary(String accountName) {
         mRemoteClient.initUserCreateRequest(accountName);
+    }
+
+    private Fragment getMapFragment() {
+        if(mMapFragment == null) {
+            mMapFragment = new MapFragment();
+            ((MapFragment) mMapFragment).initialize(mRemoteClient);
+        }
+
+        return mMapFragment;
+    }
+
+    private Fragment getCompletedObjectivesFragment() {
+        if(mCompletedObjectivesFragment == null) {
+            mCompletedObjectivesFragment = new CompletedObjectivesFragment();
+        }
+
+        return mCompletedObjectivesFragment;
+    }
+
+    private Fragment getCreateObjectiveFragment() {
+        if(mCreateObjectiveFragment == null) {
+            mCreateObjectiveFragment = new CreateObjectiveFragment();
+            ((CreateObjectiveFragment) mCreateObjectiveFragment).initialize(mRemoteClient, mLocationClient, mAccountName);
+        }
+
+        return mCreateObjectiveFragment;
+    }
+
+    private void selectFragment(Fragment fragment) {
+        if (fragment != null) {
+            FragmentManager fragmentManager = getSupportFragmentManager();
+            FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+            fragmentTransaction.replace(R.id.container_body, fragment);
+            fragmentTransaction.commit();
+        }
+
+        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        drawer.closeDrawer(GravityCompat.START);
     }
 }
