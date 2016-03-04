@@ -15,9 +15,15 @@
         android:layout_height="match_parent"
         tools:context="com.google.android.gms.maps.MapFragment" />
 
-    <include
-        layout="@layout/slide_up_panel"
+    <TextView
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="wrap_content"
+        android:gravity="left"
+        android:layout_alignBottom="@id/map"
+        android:textColor="@color/text_primary"
+        android:textSize="18sp"
+        android:background="@color/colorPrimary"
+        android:id="@+id/open_dialog_text" />
+
 
 </RelativeLayout>

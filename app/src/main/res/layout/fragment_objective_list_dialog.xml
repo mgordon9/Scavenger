@@ -1,0 +1,25 @@
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#ffffff"
+    android:orientation="vertical"
+    android:clickable="true"
+    android:focusable="false"
+    android:id="@+id/dragView">
+
+    <!--<TextView-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:gravity="left"-->
+        <!--android:textColor="@color/text_primary"-->
+        <!--android:textSize="20sp"-->
+        <!--android:background="@color/colorPrimary"-->
+        <!--android:id="@+id/dialog_header"/>-->
+
+    <include
+        layout="@layout/fragment_objective_list"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
+</LinearLayout>

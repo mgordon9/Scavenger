@@ -8,6 +8,7 @@ import android.location.LocationManager;
 import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -26,16 +27,15 @@ import com.project.ece150.scavenger.remote.IRemoteClientObserver;
 import com.project.ece150.scavenger.remote.RemoteClient;
 import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 
-import java.util.ArrayList;
 import java.util.List;
 
 
 public class MapFragment extends Fragment
         implements OnMapReadyCallback,
         GoogleMap.OnMyLocationButtonClickListener,
-        SlidingUpPanelLayout.PanelSlideListener,
         ObjectivesFragment.OnListFragmentInteractionListener,
-        IRemoteClientObserver {
+        IRemoteClientObserver,
+        View.OnClickListener{
 
     private static final int MY_LOCATION_PERMISSION_REQUEST_CODE = 1;
 
@@ -44,10 +44,13 @@ public class MapFragment extends Fragment
     private Criteria mCriteria;
     private String mProvider;
     private UiSettings mUiSettings;
-    SlidingUpPanelLayout mLayout;
-    RecyclerView mRecyclerView;
-    RemoteClient mClient;
+    private SlidingUpPanelLayout mLayout;
+    private RecyclerView mRecyclerView;
+    private RemoteClient mClient;
     private boolean scavengerHuntActive;
+    private ObjectiveListDialogFragment mObjectiveListDialogFragment;
+    private IObjective mCurrentObjective;
+    private TextView mTextButton;
 
     public MapFragment()
     {
@@ -70,66 +73,21 @@ public class MapFragment extends Fragment
         mProvider = mLocationManager.getBestProvider(mCriteria, true);
 
         View view = (RelativeLayout) inflater.inflate(R.layout.fragment_map, container, false);
-        ArrayList<IObjective> data = new ArrayList<IObjective>();
-        mRecyclerView = (RecyclerView) view.findViewById(R.id.list);
-        PickObjectiveRecyclerViewAdapter adapter = new PickObjectiveRecyclerViewAdapter(data, this);
-        mRecyclerView.setAdapter(adapter);
 
-        mLayout = (SlidingUpPanelLayout) view.findViewById(R.id.sliding_layout);
-        mLayout.setPanelSlideListener(this);
+        mTextButton = (TextView)view.findViewById(R.id.open_dialog_text);
+        mTextButton.setClickable(true);
+        mTextButton.setOnClickListener(this);
+        mTextButton.setText("No Objective Selected");
 
         return view;
     }
+
 
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState)
     {
         startMap();
         scavengerHuntActive = false;
-        TextView panelTitle = (TextView) getView().findViewById(R.id.slide_panel_title);
-        panelTitle.setText("Find Objectives Near You");
-    }
-
-
-    @Override
-    public void onPanelSlide(View panel, float slideOffset) {
-    }
-
-    @Override
-    public void onPanelExpanded(View panel) {
-        //Backend
-        if(!scavengerHuntActive) {
-            mClient.initObjectivesGetRequest();
-            TextView panelTitle = (TextView) getView().findViewById(R.id.slide_panel_title);
-            panelTitle.setText("Available Objectives");
-        }
-        else {
-            TextView panelTitle = (TextView) getView().findViewById(R.id.slide_panel_title);
-            panelTitle.setText("Current Objective");
-        }
-    }
-
-    @Override
-    public void onPanelCollapsed(View panel) {
-        if(!scavengerHuntActive){
-            TextView panelTitle = (TextView) getView().findViewById(R.id.slide_panel_title);
-            panelTitle.setText("Find Objectives Near You");
-        }
-        else {
-            TextView panelTitle = (TextView) getView().findViewById(R.id.slide_panel_title);
-            panelTitle.setText("Scavenger Hunt Active");
-        }
-
-    }
-
-    @Override
-    public void onPanelAnchored(View panel) {
-
-    }
-
-    @Override
-    public void onPanelHidden(View panel) {
-
     }
 
     @Override
@@ -174,10 +132,10 @@ public class MapFragment extends Fragment
         mMap.addMarker(new MarkerOptions().position(objectivePos).title(item.getTitle()));
         mMap.moveCamera(CameraUpdateFactory.newLatLng(objectivePos));
         mMap.animateCamera(CameraUpdateFactory.zoomTo(16.0f));
-
+        mObjectiveListDialogFragment.dismiss();
         scavengerHuntActive = true;
-        mLayout.setPanelState(SlidingUpPanelLayout.PanelState.COLLAPSED);
-        mClient.initObjectiveGetRequest(item.getObjectiveid());
+        mCurrentObjective = item;
+        mTextButton.setText("Objective Active");
     }
 
     @Override
@@ -187,15 +145,29 @@ public class MapFragment extends Fragment
 
     @Override
     public void onObjectivesGetReceived(List<IObjective> objectives) {
-        PickObjectiveRecyclerViewAdapter adapter = new PickObjectiveRecyclerViewAdapter(objectives, this);
-        mRecyclerView.setAdapter(adapter);
-        mRecyclerView.invalidate();
+        mObjectiveListDialogFragment.onObjectivesGetReceived(objectives);
     }
 
     @Override
     public void onObjectiveGetReceived(IObjective objective) {
-        ActiveObjectiveRecyclerViewAdapter adapter = new ActiveObjectiveRecyclerViewAdapter(objective);
-        mRecyclerView.setAdapter(adapter);
-        mRecyclerView.invalidate();
+        mObjectiveListDialogFragment.onObjectiveGetReceived(objective);
+    }
+
+    @Override
+    public void onClick(View v) {
+        FragmentManager fm = getChildFragmentManager();
+        mObjectiveListDialogFragment = new ObjectiveListDialogFragment();
+        mObjectiveListDialogFragment.setListener(this);
+        if(!scavengerHuntActive) {
+            mObjectiveListDialogFragment.setTitle("Available Objectives");
+            mClient.initObjectivesGetRequest();
+            mObjectiveListDialogFragment.show(fm, "objectives_list");
+        }
+        else {
+            mObjectiveListDialogFragment.setTitle("Current Objective");
+            mClient.initObjectiveGetRequest(mCurrentObjective.getObjectiveid());
+            mObjectiveListDialogFragment.show(fm, "active_objective");
+        }
+
     }
 }
