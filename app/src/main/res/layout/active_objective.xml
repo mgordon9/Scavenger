@@ -1,27 +1,30 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical" android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:weightSum="1">
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
 
     <ImageView
-        android:layout_width="185dp"
-        android:layout_height="187dp"
+        android:layout_width="match_parent"
+        android:layout_height="150dp"
         android:id="@+id/objective_picture"
-        android:layout_gravity="center_horizontal" />
+        android:scaleType="centerInside" />
 
     <TextView
-        android:layout_width="match_parent"
-        android:layout_height="255dp"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
         android:textAppearance="?android:attr/textAppearanceMedium"
         android:text="Medium Text"
-        android:id="@+id/info"
-        android:layout_gravity="center_horizontal" />
+        android:id="@+id/info" />
 
     <Button
-        android:layout_width="139dp"
-        android:layout_height="match_parent"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:text="Compare Picture"
         android:id="@+id/comparePictureButton"
-        android:layout_gravity="center_horizontal" />
+        android:layout_gravity="center_horizontal"
+        android:clickable="true"
+        android:onClick=""/>
+
 </LinearLayout>

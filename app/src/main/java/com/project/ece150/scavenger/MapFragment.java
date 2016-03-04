@@ -35,7 +35,7 @@ public class MapFragment extends Fragment
         GoogleMap.OnMyLocationButtonClickListener,
         ObjectivesFragment.OnListFragmentInteractionListener,
         IRemoteClientObserver,
-        View.OnClickListener{
+        TextView.OnClickListener{
 
     private static final int MY_LOCATION_PERMISSION_REQUEST_CODE = 1;
 
@@ -49,6 +49,7 @@ public class MapFragment extends Fragment
     private RemoteClient mClient;
     private boolean scavengerHuntActive;
     private ObjectiveListDialogFragment mObjectiveListDialogFragment;
+    private ActiveObjectiveDialogFragment mActiveObjectiveDialogFragment;
     private IObjective mCurrentObjective;
     private TextView mTextButton;
 
@@ -67,7 +68,6 @@ public class MapFragment extends Fragment
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         mLocationManager = (LocationManager) getActivity().getSystemService(getActivity().LOCATION_SERVICE);
         mCriteria = new Criteria();
         mProvider = mLocationManager.getBestProvider(mCriteria, true);
@@ -136,6 +136,7 @@ public class MapFragment extends Fragment
         scavengerHuntActive = true;
         mCurrentObjective = item;
         mTextButton.setText("Objective Active");
+
     }
 
     @Override
@@ -150,23 +151,26 @@ public class MapFragment extends Fragment
 
     @Override
     public void onObjectiveGetReceived(IObjective objective) {
-        mObjectiveListDialogFragment.onObjectiveGetReceived(objective);
+        mActiveObjectiveDialogFragment.onObjectiveGetReceived(objective);
     }
 
     @Override
     public void onClick(View v) {
         FragmentManager fm = getChildFragmentManager();
-        mObjectiveListDialogFragment = new ObjectiveListDialogFragment();
-        mObjectiveListDialogFragment.setListener(this);
         if(!scavengerHuntActive) {
+            mObjectiveListDialogFragment = new ObjectiveListDialogFragment();
+            mObjectiveListDialogFragment.setListener(this);
             mObjectiveListDialogFragment.setTitle("Available Objectives");
-            mClient.initObjectivesGetRequest();
             mObjectiveListDialogFragment.show(fm, "objectives_list");
+            mClient.initObjectivesGetRequest();
         }
         else {
-            mObjectiveListDialogFragment.setTitle("Current Objective");
+
+            mActiveObjectiveDialogFragment = new ActiveObjectiveDialogFragment();
+            mActiveObjectiveDialogFragment.setListener(this);
+            mActiveObjectiveDialogFragment.setTitle("Current Objective");
+            mActiveObjectiveDialogFragment.show(fm, "active_objective");
             mClient.initObjectiveGetRequest(mCurrentObjective.getObjectiveid());
-            mObjectiveListDialogFragment.show(fm, "active_objective");
         }
 
     }

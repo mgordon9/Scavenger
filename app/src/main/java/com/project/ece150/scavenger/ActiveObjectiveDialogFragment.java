@@ -3,6 +3,7 @@ package com.project.ece150.scavenger;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.DialogInterface;
+import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 import android.support.v7.widget.RecyclerView;
@@ -10,23 +11,23 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
 import android.widget.LinearLayout;
+import android.widget.Toast;
 
 import com.project.ece150.scavenger.remote.IRemoteClientObserver;
 
 import java.util.List;
 
-/**
- *
- */
-public class ObjectiveListDialogFragment extends DialogFragment
-        implements IRemoteClientObserver{
+
+public class ActiveObjectiveDialogFragment extends DialogFragment
+        implements IRemoteClientObserver,
+        View.OnClickListener{
 
     private ObjectivesFragment.OnListFragmentInteractionListener mListener;
     private RecyclerView mRecyclerView;
     private String mTitle;
     private Button mCompareButton;
 
-    public ObjectiveListDialogFragment() {
+    public ActiveObjectiveDialogFragment() {
         // Required empty public constructor
     }
 
@@ -52,14 +53,14 @@ public class ObjectiveListDialogFragment extends DialogFragment
 
     @Override
     public void onObjectivesGetReceived(List<IObjective> objectives) {
-        PickObjectiveRecyclerViewAdapter adapter = new PickObjectiveRecyclerViewAdapter(objectives, mListener);
-        mRecyclerView.setAdapter(adapter);
-        mRecyclerView.invalidate();
+
     }
 
     @Override
     public void onObjectiveGetReceived(IObjective objective) {
-
+        ActiveObjectiveRecyclerViewAdapter adapter = new ActiveObjectiveRecyclerViewAdapter(objective, this);
+        mRecyclerView.setAdapter(adapter);
+        mRecyclerView.invalidate();
     }
 
     @Override
@@ -75,11 +76,17 @@ public class ObjectiveListDialogFragment extends DialogFragment
                 );
 
         LayoutInflater i = getActivity().getLayoutInflater();
-        View view = (LinearLayout) i.inflate(R.layout.fragment_objective_list_dialog, null);
+        View view = (LinearLayout) i.inflate(R.layout.fragment_active_objective_dialog, null);
         mRecyclerView = (RecyclerView) view.findViewById(R.id.list);
 
         b.setView(view);
         return b.create();
     }
 
+    @Override
+    public void onClick(View v) {
+        Bitmap image = ((ActiveObjectiveRecyclerViewAdapter)mRecyclerView.getAdapter()).getValue().getImage();
+
+        Toast.makeText(getActivity(), "Use Open CV Here!", Toast.LENGTH_SHORT).show();
+    }
 }
