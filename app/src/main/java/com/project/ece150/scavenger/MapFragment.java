@@ -177,7 +177,7 @@ public class MapFragment extends Fragment
 
         scavengerHuntActive = true;
         mLayout.setPanelState(SlidingUpPanelLayout.PanelState.COLLAPSED);
-        mClient.initObjectiveGetRequest(item.getObjectiveid());
+//        mClient.initObjectiveGetRequest(item.getObjectiveid());
     }
 
     @Override
