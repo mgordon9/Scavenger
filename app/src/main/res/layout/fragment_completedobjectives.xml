@@ -6,25 +6,13 @@
     tools:context="com.project.ece150.scavenger.CompletedObjectivesFragment">
 
 
-    <TextView
-        android:id="@+id/label"
-        android:layout_alignParentTop="true"
-        android:layout_marginTop="100dp"
-        android:layout_width="fill_parent"
+    <ListView
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:gravity="center_horizontal"
-        android:textSize="45dp"
-        android:text="COMPLETED OBJECTIVES FRAGMENT"
-        android:textStyle="bold"/>
+        android:id="@+id/listView"
+        android:layout_centerVertical="true"
+        android:layout_centerHorizontal="true" />
 
-    <TextView
-        android:layout_below="@id/label"
-        android:layout_centerInParent="true"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:textSize="12dp"
-        android:layout_marginTop="10dp"
-        android:gravity="center_horizontal"
-        android:text="Completed Objectives come here soon!" />
+
 
 </RelativeLayout>

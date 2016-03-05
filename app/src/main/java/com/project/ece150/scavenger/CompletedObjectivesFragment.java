@@ -1,22 +1,44 @@
 package com.project.ece150.scavenger;
 
 import android.app.Activity;
+import android.app.ListFragment;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
+import android.widget.ListView;
+
+import com.project.ece150.scavenger.remote.IRemoteClientObserver;
+import com.project.ece150.scavenger.remote.RemoteClient;
+
+import java.util.ArrayList;
+import java.util.List;
 
 
-public class CompletedObjectivesFragment extends Fragment {
+public class CompletedObjectivesFragment extends Fragment implements IRemoteClientObserver {
+
+    RemoteClient mRemoteClient;
+    private String _username;
+    String[] objectiveNames;// = {"obj1", "obj2", "obj3", "obj4", "obj5","obj1", "obj2", "obj3", "obj4", "obj5","obj1", "obj2", "obj3", "obj4", "obj5","obj1", "obj2", "obj3", "obj4", "obj5"};
+    ListView completedList;
 
     public CompletedObjectivesFragment() {
         // Required empty public constructor
     }
 
+    public void initialize(RemoteClient remoteClient, String userId) {
+        mRemoteClient = remoteClient;
+        _username = userId;
+        mRemoteClient.registerObserver(this); //register observer
+    }
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
 
     }
 
@@ -24,7 +46,11 @@ public class CompletedObjectivesFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_completedobjectives, container, false);
+        completedList = (ListView) rootView.findViewById(R.id.listView);
+        mRemoteClient.initUserGetRequest(_username);
 
+        //ArrayAdapter<String> adapter = new ArrayAdapter<String>(getActivity(),R.layout.list_item_layout,objectiveNames);
+        //completedList.setAdapter(adapter);
 
         // Inflate the layout for this fragment
         return rootView;
@@ -38,5 +64,36 @@ public class CompletedObjectivesFragment extends Fragment {
     @Override
     public void onDetach() {
         super.onDetach();
+    }
+
+    @Override
+    public void onUserGetReceived(IUser user) {
+        List<IObjective> completedObjectives = user.getLocationObjectives();
+        if (completedObjectives != null) {
+            objectiveNames = new String[completedObjectives.size()];
+            int i = 0;
+            for (IObjective o : completedObjectives) {
+                String s = o.getTitle();
+                objectiveNames[i] = s;
+                i++;
+            }
+        }
+        else{
+            Log.e("poop", "Null is null af");
+            objectiveNames = new String[1];
+            objectiveNames[0] = "No objectives completed :(";
+        }
+        ArrayAdapter<String> adapter = new ArrayAdapter<String>(getActivity(),R.layout.list_item_layout,objectiveNames);
+        completedList.setAdapter(adapter);
+    }
+
+    @Override
+    public void onObjectivesGetReceived(List<IObjective> objectives) {
+
+    }
+
+    @Override
+    public void onObjectiveGetReceived(IObjective objective) {
+
     }
 }
