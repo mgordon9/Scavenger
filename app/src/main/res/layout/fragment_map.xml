@@ -15,6 +15,16 @@
         android:layout_height="match_parent"
         tools:context="com.google.android.gms.maps.MapFragment" />
 
+    <!--<TextView-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="0dp"-->
+        <!--android:gravity="center"-->
+        <!--android:layout_alignTop="@id/open_dialog_text"-->
+        <!--android:textColor="@color/text_primary"-->
+        <!--android:textSize="18sp"-->
+        <!--android:background="@color/colorPrimary"-->
+        <!--android:id="@+id/distance_text" />-->
+
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

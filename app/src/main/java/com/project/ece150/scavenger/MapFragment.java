@@ -2,6 +2,7 @@ package com.project.ece150.scavenger;
 
 import android.Manifest;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
 import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationManager;
@@ -9,23 +10,28 @@ import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
-import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.GooglePlayServicesUtil;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.location.LocationListener;
+import com.google.android.gms.location.LocationRequest;
+import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.UiSettings;
+import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.MarkerOptions;
 import com.project.ece150.scavenger.remote.IRemoteClientObserver;
 import com.project.ece150.scavenger.remote.RemoteClient;
-import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 
 import java.util.List;
 
@@ -35,23 +41,29 @@ public class MapFragment extends Fragment
         GoogleMap.OnMyLocationButtonClickListener,
         ObjectivesFragment.OnListFragmentInteractionListener,
         IRemoteClientObserver,
-        TextView.OnClickListener{
+        View.OnClickListener,
+        LocationListener,
+        GoogleApiClient.ConnectionCallbacks,
+        GoogleApiClient.OnConnectionFailedListener{
 
     private static final int MY_LOCATION_PERMISSION_REQUEST_CODE = 1;
+    private static final long UPDATE_INTERVAL = 3000;
+    public static final int RADIUS = 100;
 
     private GoogleMap mMap;
     private LocationManager mLocationManager;
     private Criteria mCriteria;
     private String mProvider;
     private UiSettings mUiSettings;
-    private SlidingUpPanelLayout mLayout;
-    private RecyclerView mRecyclerView;
     private RemoteClient mClient;
     private boolean scavengerHuntActive;
     private ObjectiveListDialogFragment mObjectiveListDialogFragment;
     private ActiveObjectiveDialogFragment mActiveObjectiveDialogFragment;
     private IObjective mCurrentObjective;
     private TextView mTextButton;
+    private LocationRequest mLocationRequest;
+    private Location mBestReading;
+    private GoogleApiClient mGoogleApiClient;
 
     public MapFragment()
     {
@@ -70,6 +82,7 @@ public class MapFragment extends Fragment
         super.onCreate(savedInstanceState);
         mLocationManager = (LocationManager) getActivity().getSystemService(getActivity().LOCATION_SERVICE);
         mCriteria = new Criteria();
+        mCriteria.setAccuracy(Criteria.ACCURACY_FINE);
         mProvider = mLocationManager.getBestProvider(mCriteria, true);
 
         View view = (RelativeLayout) inflater.inflate(R.layout.fragment_map, container, false);
@@ -79,7 +92,44 @@ public class MapFragment extends Fragment
         mTextButton.setOnClickListener(this);
         mTextButton.setText("No Objective Selected");
 
+        mLocationRequest = LocationRequest.create();
+        mLocationRequest.setInterval(UPDATE_INTERVAL);
+        mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+
+        mGoogleApiClient = new GoogleApiClient.Builder(getContext())
+                .addApi(LocationServices.API)
+                .addConnectionCallbacks(this)
+                .addOnConnectionFailedListener(this)
+                .build();
+        mGoogleApiClient.connect();
+//        checkPlayServices();
+
         return view;
+    }
+
+    private boolean checkPlayServices() {
+        int resultCode = GooglePlayServicesUtil
+                .isGooglePlayServicesAvailable(getActivity());
+        if (resultCode != ConnectionResult.SUCCESS) {
+            if (GooglePlayServicesUtil.isUserRecoverableError(resultCode)) {
+                GooglePlayServicesUtil.getErrorDialog(resultCode, getActivity(),
+                        1000).show();
+            } else {
+                Toast.makeText(getContext(),
+                        "This device is not supported.", Toast.LENGTH_LONG)
+                        .show();
+//                finish();
+            }
+            return false;
+        }
+        return true;
+    }
+
+    @Override
+    public void onDestroy()
+    {
+        super.onDestroy();
+        LocationServices.FusedLocationApi.removeLocationUpdates(mGoogleApiClient, this);
     }
 
 
@@ -104,6 +154,8 @@ public class MapFragment extends Fragment
             // for ActivityCompat#requestPermissions for more details.
             return;
         }
+        mMap.setMyLocationEnabled(true);
+
         Location location = mLocationManager.getLastKnownLocation(mProvider);
 
         LatLng currentPos = new LatLng(location.getLatitude(), location.getLongitude());
@@ -127,16 +179,34 @@ public class MapFragment extends Fragment
 
     @Override
     public void onListFragmentInteraction(IObjective item) {
-        mMap.clear();
-        LatLng objectivePos = new LatLng(item.getLatitude(), item.getLongitude());
-        mMap.addMarker(new MarkerOptions().position(objectivePos).title(item.getTitle()));
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(objectivePos));
-        mMap.animateCamera(CameraUpdateFactory.zoomTo(16.0f));
         mObjectiveListDialogFragment.dismiss();
         scavengerHuntActive = true;
         mCurrentObjective = item;
-        mTextButton.setText("Objective Active");
 
+        //randomizing the circles center
+        double randLat = ((Math.random() * 2.0 - 1.0) * (double)RADIUS / 111320.0) + mCurrentObjective.getLatitude();
+        double randLong = ((Math.random() * 2.0 - 1.0) * (double)RADIUS / 111320.0) + mCurrentObjective.getLongitude();
+        LatLng objectiveArea = new LatLng(randLat, randLong);
+
+        mMap.clear();
+        mMap.addCircle(new CircleOptions()
+                .center(objectiveArea)
+                .radius(RADIUS)
+                .strokeColor(Color.BLUE)
+                .strokeWidth((float) 0)
+                .fillColor(0x8087CEFA));
+//        mMap.addMarker(new MarkerOptions().position(new LatLng(mCurrentObjective.getLatitude(), mCurrentObjective.getLongitude())).title(item.getTitle()));
+        mMap.moveCamera(CameraUpdateFactory.newLatLng(objectiveArea));
+        mMap.animateCamera(CameraUpdateFactory.zoomTo(16.0f));
+
+        Location location = LocationServices.FusedLocationApi.getLastLocation(
+                mGoogleApiClient);
+        double lat = Math.abs(mCurrentObjective.getLatitude() - location.getLatitude());
+        double longitude = Math.abs(mCurrentObjective.getLongitude() - location.getLongitude());
+        double distance = Math.sqrt(lat * lat + longitude * longitude);
+        int distanceMeters = (int)(distance * 111320.0);
+
+        mTextButton.setText("Objective Active     Distance: " + ((Integer) distanceMeters).toString() + " meters");
     }
 
     @Override
@@ -151,6 +221,7 @@ public class MapFragment extends Fragment
 
     @Override
     public void onObjectiveGetReceived(IObjective objective) {
+        mCurrentObjective = objective;
         mActiveObjectiveDialogFragment.onObjectiveGetReceived(objective);
     }
 
@@ -173,5 +244,36 @@ public class MapFragment extends Fragment
             mClient.initObjectiveGetRequest(mCurrentObjective.getObjectiveid());
         }
 
+    }
+
+    @Override
+    public void onConnected(Bundle bundle) {
+
+        LocationServices.FusedLocationApi.requestLocationUpdates(
+                mGoogleApiClient, mLocationRequest, this);
+        Toast.makeText(getActivity(), "OnConnected", Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void onConnectionSuspended(int i) {
+        Toast.makeText(getActivity(), "Connection Suspended", Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void onLocationChanged(Location location) {
+        if(scavengerHuntActive) {
+            double lat = Math.abs(mCurrentObjective.getLatitude() - location.getLatitude());
+            double longitude = Math.abs(mCurrentObjective.getLongitude() - location.getLongitude());
+
+            double distance = Math.sqrt(lat * lat + longitude * longitude);
+            int distanceMeters = (int)(distance * 111320.0);
+            mTextButton.setText("Objective Active\nDistance: " + ((Integer) distanceMeters).toString() + " meters");
+        }
+//        Toast.makeText(getActivity(), location.toString(), Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void onConnectionFailed(ConnectionResult connectionResult) {
+        Toast.makeText(getActivity(), "Connection Failed", Toast.LENGTH_SHORT).show();
     }
 }
