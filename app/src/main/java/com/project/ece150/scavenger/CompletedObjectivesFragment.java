@@ -11,6 +11,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.TextView;
 
 import com.project.ece150.scavenger.remote.IRemoteClientObserver;
 import com.project.ece150.scavenger.remote.RemoteClient;
@@ -26,7 +27,9 @@ public class CompletedObjectivesFragment extends Fragment implements IRemoteClie
     Bitmap[] objectiveThumbnails;
     String[] objectiveDetails;
     String[] objectiveNames;// = {"obj1", "obj2", "obj3", "obj4", "obj5","obj1", "obj2", "obj3", "obj4", "obj5","obj1", "obj2", "obj3", "obj4", "obj5","obj1", "obj2", "obj3", "obj4", "obj5"};
-    ListView completedList;
+    private static ListView completedList;
+
+
 
     public CompletedObjectivesFragment() {
         // Required empty public constructor
@@ -83,6 +86,19 @@ public class CompletedObjectivesFragment extends Fragment implements IRemoteClie
                 Bitmap b = o.getThumbnail();
                 objectiveNames[i] = s;
                 objectiveThumbnails[i] = b;
+                if(o.isVisitedGPS() && o.isVisitedVisual()){
+                    objectiveDetails[i] = "Objective Complete! Good Job";
+                }
+                else if(o.isVisitedVisual()){
+                    objectiveDetails[i] = "Objective Visually Confirmed, Location Confirmation Incomplete";
+                }
+                else if(o.isVisitedGPS()){
+                    objectiveDetails[i] = "Objective Positionally Confirmed, Visual Confirmation Incomplete";
+                }
+                else{
+                    objectiveDetails[i] = "Objective Incomplete! Get to Work!!!";
+                }
+
                 i++;
             }
         }
