@@ -89,11 +89,11 @@ public class CompletedObjectivesFragment extends Fragment implements IRemoteClie
                 Bitmap b = o.getThumbnail();
                 objectiveNames[i] = s;
                 objectiveThumbnails[i] = b;
-                if(o.isVisitedGPS() && o.isVisitedVisual()){
+                if((o.isVisitedGPS() && o.isVisitedVisual())){
                     objectiveDetails[i] = "Objective Complete! Good Job";
                     rowColors[i] = Color.argb(160,19,119,22);
                 }
-                else if(o.isVisitedVisual()||true){
+                else if(o.isVisitedVisual()){
                     objectiveDetails[i] = "Objective Visually Confirmed, Location Confirmation Incomplete";
                     rowColors[i] = Color.argb(160,235,247,56);
                 }
