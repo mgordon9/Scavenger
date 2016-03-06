@@ -2,6 +2,7 @@ package com.project.ece150.scavenger;
 
 import android.app.Activity;
 import android.app.ListFragment;
+import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.util.Log;
@@ -22,6 +23,8 @@ public class CompletedObjectivesFragment extends Fragment implements IRemoteClie
 
     RemoteClient mRemoteClient;
     private String _username;
+    Bitmap[] objectiveThumbnails;
+    String[] objectiveDetails;
     String[] objectiveNames;// = {"obj1", "obj2", "obj3", "obj4", "obj5","obj1", "obj2", "obj3", "obj4", "obj5","obj1", "obj2", "obj3", "obj4", "obj5","obj1", "obj2", "obj3", "obj4", "obj5"};
     ListView completedList;
 
@@ -70,20 +73,28 @@ public class CompletedObjectivesFragment extends Fragment implements IRemoteClie
     public void onUserGetReceived(IUser user) {
         List<IObjective> completedObjectives = user.getLocationObjectives();
         if (completedObjectives != null) {
-            objectiveNames = new String[completedObjectives.size()];
+            int size = completedObjectives.size();
+            objectiveNames = new String[size];
+            objectiveThumbnails = new Bitmap[size];
+            objectiveDetails = new String[size];
             int i = 0;
             for (IObjective o : completedObjectives) {
                 String s = o.getTitle();
+                Bitmap b = o.getThumbnail();
                 objectiveNames[i] = s;
+                objectiveThumbnails[i] = b;
                 i++;
             }
         }
         else{
-            Log.e("poop", "Null is null af");
+            Log.e("poop", " is null af");
             objectiveNames = new String[1];
             objectiveNames[0] = "No objectives completed :(";
         }
-        ArrayAdapter<String> adapter = new ArrayAdapter<String>(getActivity(),R.layout.list_item_layout,objectiveNames);
+
+        CustomListAdapter adapter = new CustomListAdapter(getActivity(), objectiveNames,objectiveDetails,objectiveThumbnails);
+
+        //ArrayAdapter<String> adapter = new ArrayAdapter<String>(getActivity(),R.layout.list_item_layout,objectiveNames);
         completedList.setAdapter(adapter);
     }
 
@@ -97,3 +108,5 @@ public class CompletedObjectivesFragment extends Fragment implements IRemoteClie
 
     }
 }
+
+
