@@ -30,6 +30,7 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.UiSettings;
 import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
+import com.project.ece150.scavenger.remote.EObjectiveConfirmedType;
 import com.project.ece150.scavenger.remote.IRemoteClientObserver;
 import com.project.ece150.scavenger.remote.RemoteClient;
 
@@ -64,13 +65,16 @@ public class MapFragment extends Fragment
     private LocationRequest mLocationRequest;
     private Location mBestReading;
     private GoogleApiClient mGoogleApiClient;
+    private String mAccountName;
+    private boolean locationConfirmed;
 
     public MapFragment()
     {
     }
 
-    public void initialize(RemoteClient remoteClient)
+    public void initialize(RemoteClient remoteClient, String accountName)
     {
+        mAccountName = accountName;
         mClient = remoteClient;
         mClient.registerObserver(this);
     }
@@ -80,6 +84,7 @@ public class MapFragment extends Fragment
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        locationConfirmed = false;
         mLocationManager = (LocationManager) getActivity().getSystemService(getActivity().LOCATION_SERVICE);
         mCriteria = new Criteria();
         mCriteria.setAccuracy(Criteria.ACCURACY_FINE);
@@ -267,6 +272,12 @@ public class MapFragment extends Fragment
 
             double distance = Math.sqrt(lat * lat + longitude * longitude);
             int distanceMeters = (int)(distance * 111320.0);
+            if(distanceMeters <= 10 && !locationConfirmed)
+            {
+                locationConfirmed = true;
+                mClient.initUserAddObjectiveRequest(mAccountName, mCurrentObjective.getObjectiveid(), EObjectiveConfirmedType.LOCATIONCONFIRMED);
+                Toast.makeText(getActivity(), "Location Confirmed, Congratulations!!", Toast.LENGTH_SHORT).show();
+            }
             mTextButton.setText("Objective Active\nDistance: " + ((Integer) distanceMeters).toString() + " meters");
         }
 //        Toast.makeText(getActivity(), location.toString(), Toast.LENGTH_SHORT).show();

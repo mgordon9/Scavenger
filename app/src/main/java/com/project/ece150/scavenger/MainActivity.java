@@ -31,7 +31,7 @@ public class MainActivity extends AppCompatActivity
 
     static final int PICK_ACCOUNT_REQUEST = 1002;
 
-    String mAccountName;
+    public String mAccountName;
 
     RemoteClient mRemoteClient;
     LocationClient mLocationClient;
@@ -157,7 +157,7 @@ public class MainActivity extends AppCompatActivity
     private Fragment getMapFragment() {
         if(mMapFragment == null) {
             mMapFragment = new MapFragment();
-            ((MapFragment) mMapFragment).initialize(mRemoteClient);
+            mMapFragment.initialize(mRemoteClient, mAccountName);
         }
 
         return mMapFragment;
