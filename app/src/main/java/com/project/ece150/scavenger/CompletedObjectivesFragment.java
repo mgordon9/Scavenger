@@ -3,6 +3,7 @@ package com.project.ece150.scavenger;
 import android.app.Activity;
 import android.app.ListFragment;
 import android.graphics.Bitmap;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.util.Log;
@@ -24,6 +25,7 @@ public class CompletedObjectivesFragment extends Fragment implements IRemoteClie
 
     RemoteClient mRemoteClient;
     private String _username;
+    int[] rowColors;
     Bitmap[] objectiveThumbnails;
     String[] objectiveDetails;
     String[] objectiveNames;// = {"obj1", "obj2", "obj3", "obj4", "obj5","obj1", "obj2", "obj3", "obj4", "obj5","obj1", "obj2", "obj3", "obj4", "obj5","obj1", "obj2", "obj3", "obj4", "obj5"};
@@ -80,6 +82,7 @@ public class CompletedObjectivesFragment extends Fragment implements IRemoteClie
             objectiveNames = new String[size];
             objectiveThumbnails = new Bitmap[size];
             objectiveDetails = new String[size];
+            rowColors = new int[size];
             int i = 0;
             for (IObjective o : completedObjectives) {
                 String s = o.getTitle();
@@ -88,15 +91,19 @@ public class CompletedObjectivesFragment extends Fragment implements IRemoteClie
                 objectiveThumbnails[i] = b;
                 if(o.isVisitedGPS() && o.isVisitedVisual()){
                     objectiveDetails[i] = "Objective Complete! Good Job";
+                    rowColors[i] = Color.argb(160,19,119,22);
                 }
-                else if(o.isVisitedVisual()){
+                else if(o.isVisitedVisual()||true){
                     objectiveDetails[i] = "Objective Visually Confirmed, Location Confirmation Incomplete";
+                    rowColors[i] = Color.argb(160,235,247,56);
                 }
                 else if(o.isVisitedGPS()){
                     objectiveDetails[i] = "Objective Positionally Confirmed, Visual Confirmation Incomplete";
+                    rowColors[i] = Color.argb(160,235,247,56);
                 }
                 else{
                     objectiveDetails[i] = "Objective Incomplete! Get to Work!!!";
+                    rowColors[i] = Color.argb(160,249,25,25);
                 }
 
                 i++;
@@ -108,7 +115,7 @@ public class CompletedObjectivesFragment extends Fragment implements IRemoteClie
             objectiveNames[0] = "No objectives completed :(";
         }
 
-        CustomListAdapter adapter = new CustomListAdapter(getActivity(), objectiveNames,objectiveDetails,objectiveThumbnails);
+        CustomListAdapter adapter = new CustomListAdapter(getActivity(), objectiveNames,objectiveDetails,objectiveThumbnails,rowColors);
 
         //ArrayAdapter<String> adapter = new ArrayAdapter<String>(getActivity(),R.layout.list_item_layout,objectiveNames);
         completedList.setAdapter(adapter);

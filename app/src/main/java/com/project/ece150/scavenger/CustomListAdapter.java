@@ -5,6 +5,7 @@ import android.app.Activity;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
+import android.graphics.PorterDuff;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,8 +20,9 @@ public class CustomListAdapter extends ArrayAdapter<String> {
     private final String[] itemname;
     private final Bitmap[] imgid;
     private final String[] details;
+    private final int[] colors;
 
-    public CustomListAdapter(Activity context, String[] itemname, String[] details, Bitmap[] imgid) {
+    public CustomListAdapter(Activity context, String[] itemname, String[] details, Bitmap[] imgid, int[] colors) {
         super(context, R.layout.list_item_layout, itemname);
         // TODO Auto-generated constructor stub
 
@@ -28,6 +30,7 @@ public class CustomListAdapter extends ArrayAdapter<String> {
         this.itemname=itemname;
         this.imgid=imgid;
         this.details = details;
+        this.colors=colors;
     }
 
     public View getView(int position,View view,ViewGroup parent) {
@@ -41,6 +44,7 @@ public class CustomListAdapter extends ArrayAdapter<String> {
         txtTitle.setText(itemname[position]);
         imageView.setImageBitmap(imgid[position]);
         extratxt.setText(details[position]);
+        rowView.getBackground().setColorFilter(colors[position], PorterDuff.Mode.SRC_IN);
         return rowView;
 
     };
