@@ -2,7 +2,9 @@ package com.project.ece150.scavenger;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
+import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
@@ -15,6 +17,8 @@ import android.widget.Toast;
 
 import com.project.ece150.scavenger.remote.IRemoteClientObserver;
 
+import java.io.ByteArrayOutputStream;
+import java.io.FileOutputStream;
 import java.util.List;
 
 
@@ -87,6 +91,22 @@ public class ActiveObjectiveDialogFragment extends DialogFragment
     public void onClick(View v) {
         Bitmap image = ((ActiveObjectiveRecyclerViewAdapter)mRecyclerView.getAdapter()).getValue().getImage();
 
-        Toast.makeText(getActivity(), "Use Open CV Here!", Toast.LENGTH_SHORT).show();
+        try {
+            //Write file
+            String filename = "bitmap.png";
+            FileOutputStream stream = getActivity().openFileOutput(filename, Context.MODE_PRIVATE);
+            image.compress(Bitmap.CompressFormat.PNG, 100, stream);
+
+            //Cleanup
+            stream.close();
+            image.recycle();
+
+            //Pop intent
+            Intent in1 = new Intent(getActivity(), ConfirmationActivity.class);
+            in1.putExtra("image", filename);
+            startActivity(in1);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 }

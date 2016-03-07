@@ -59,7 +59,8 @@
 
         <activity
             android:name=".ConfirmationActivity"
-            android:label="@string/title_activity_confirmation" >
+            android:label="@string/title_activity_confirmation"
+            android:screenOrientation="portrait">
         </activity>
     </application>
 
