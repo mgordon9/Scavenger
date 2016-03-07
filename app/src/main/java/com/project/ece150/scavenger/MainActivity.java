@@ -1,6 +1,7 @@
 package com.project.ece150.scavenger;
 
 import android.accounts.AccountManager;
+import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
@@ -18,6 +19,7 @@ import android.widget.Toast;
 
 import com.google.android.gms.auth.GoogleAuthUtil;
 import com.google.android.gms.common.AccountPicker;
+import com.project.ece150.scavenger.remote.EObjectiveConfirmedType;
 import com.project.ece150.scavenger.remote.IRemoteClientObserver;
 import com.project.ece150.scavenger.remote.RemoteClient;
 
@@ -30,6 +32,7 @@ public class MainActivity extends AppCompatActivity
         IRemoteClientObserver{
 
     static final int PICK_ACCOUNT_REQUEST = 1002;
+    static final int CONFIRM_OBJECTIVE_REQUEST = 1009;
 
     public String mAccountName;
 
@@ -140,7 +143,16 @@ public class MainActivity extends AppCompatActivity
                     finish();
                 }
                 return;
+
+            case CONFIRM_OBJECTIVE_REQUEST:
+                if (resultCode == Activity.RESULT_OK) {
+                    mRemoteClient.initUserAddObjectiveRequest(
+                            mAccountName,
+                            mMapFragment.getCurrentObjective().getObjectiveid(),
+                            EObjectiveConfirmedType.VISUALLYCONFIRMED);
+                }
         }
+
         super.onActivityResult(requestCode, resultCode, data);
     }
 

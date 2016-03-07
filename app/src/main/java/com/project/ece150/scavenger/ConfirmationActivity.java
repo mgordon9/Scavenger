@@ -1,5 +1,7 @@
 package com.project.ece150.scavenger;
 
+import android.app.Activity;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.support.v7.app.AppCompatActivity;
@@ -272,6 +274,8 @@ public class ConfirmationActivity extends AppCompatActivity implements CameraBri
 
         // (5) Evaluate
         if(sum < 30.0) {
+            getIntent();
+            setResult(Activity.RESULT_OK);
             finish();
         } else {
             Toast.makeText(ConfirmationActivity.this, "Score: " + sum + " Please try again!", Toast.LENGTH_SHORT).show();

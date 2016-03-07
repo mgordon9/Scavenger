@@ -1,5 +1,6 @@
 package com.project.ece150.scavenger;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
@@ -14,6 +15,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.LinearLayout;
 
+import com.project.ece150.scavenger.remote.EObjectiveConfirmedType;
 import com.project.ece150.scavenger.remote.IRemoteClientObserver;
 
 import java.io.FileOutputStream;
@@ -102,10 +104,11 @@ public class ActiveObjectiveDialogFragment extends DialogFragment
             //Pop intent
             Intent in1 = new Intent(getActivity(), ConfirmationActivity.class);
             in1.putExtra("image", filename);
-            startActivity(in1);
+            getActivity().startActivityForResult(in1, MainActivity.CONFIRM_OBJECTIVE_REQUEST);
             dismiss();
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
+
 }

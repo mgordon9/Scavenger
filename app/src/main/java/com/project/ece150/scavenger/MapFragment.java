@@ -286,4 +286,8 @@ public class MapFragment extends Fragment
     public void onConnectionFailed(ConnectionResult connectionResult) {
         Toast.makeText(getActivity(), "Connection Failed", Toast.LENGTH_SHORT).show();
     }
+
+    public IObjective getCurrentObjective() {
+        return mCurrentObjective;
+    }
 }
