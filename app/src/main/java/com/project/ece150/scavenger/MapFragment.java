@@ -253,7 +253,6 @@ public class MapFragment extends Fragment
 
     @Override
     public void onConnected(Bundle bundle) {
-
         LocationServices.FusedLocationApi.requestLocationUpdates(
                 mGoogleApiClient, mLocationRequest, this);
         Toast.makeText(getActivity(), "OnConnected", Toast.LENGTH_SHORT).show();

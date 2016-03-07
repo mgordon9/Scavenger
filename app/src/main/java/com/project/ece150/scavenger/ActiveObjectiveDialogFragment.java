@@ -13,11 +13,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
 import android.widget.LinearLayout;
-import android.widget.Toast;
 
 import com.project.ece150.scavenger.remote.IRemoteClientObserver;
 
-import java.io.ByteArrayOutputStream;
 import java.io.FileOutputStream;
 import java.util.List;
 
@@ -105,6 +103,7 @@ public class ActiveObjectiveDialogFragment extends DialogFragment
             Intent in1 = new Intent(getActivity(), ConfirmationActivity.class);
             in1.putExtra("image", filename);
             startActivity(in1);
+            dismiss();
         } catch (Exception e) {
             e.printStackTrace();
         }
