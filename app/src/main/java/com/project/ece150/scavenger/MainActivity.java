@@ -154,6 +154,8 @@ public class MainActivity extends AppCompatActivity
                             mAccountName,
                             mMapFragment.getCurrentObjective().getObjectiveid(),
                             EObjectiveConfirmedType.VISUALLYCONFIRMED);
+
+                    Toast.makeText(this, "Picture Confirmed, Congratulations!!", Toast.LENGTH_SHORT).show();
                 }
         }
 
