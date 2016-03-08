@@ -231,6 +231,11 @@ public class MapFragment extends Fragment
     }
 
     @Override
+    public void onObjectiveCreated() {
+
+    }
+
+    @Override
     public void onClick(View v) {
         FragmentManager fm = getChildFragmentManager();
         if(!scavengerHuntActive) {

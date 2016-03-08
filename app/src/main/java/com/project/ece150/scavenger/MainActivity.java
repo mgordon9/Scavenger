@@ -59,6 +59,7 @@ public class MainActivity extends AppCompatActivity
         showGoogleAccountPicker();
 
         mRemoteClient = new RemoteClient("http://scavenger-game.appspot.com");
+        //mRemoteClient = new RemoteClient("http://192.168.0.7:8080");
         mRemoteClient.registerObserver(this);
         mLocationClient = new LocationClient(this);
 
@@ -129,6 +130,11 @@ public class MainActivity extends AppCompatActivity
     }
 
     @Override
+    public void onObjectiveCreated() {
+        Toast.makeText(MainActivity.this, "Objective created.", Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         switch (requestCode) {
             case PICK_ACCOUNT_REQUEST:
@@ -137,6 +143,9 @@ public class MainActivity extends AppCompatActivity
                             AccountManager.KEY_ACCOUNT_NAME);
 
                     createUserIfNeccessary(mAccountName);
+
+                    // !! HACK: Initialize mAccountName again as it has been null when initilized the first time !!
+                    mMapFragment.initialize(mRemoteClient, mAccountName);
                 } else if (resultCode == RESULT_CANCELED) {
                     Toast.makeText(this, "This application requires a Google account.",
                             Toast.LENGTH_SHORT).show();
@@ -150,6 +159,8 @@ public class MainActivity extends AppCompatActivity
                             mAccountName,
                             mMapFragment.getCurrentObjective().getObjectiveid(),
                             EObjectiveConfirmedType.VISUALLYCONFIRMED);
+
+                    Toast.makeText(this, "Picture Confirmed, Congratulations!!", Toast.LENGTH_SHORT).show();
                 }
         }
 
@@ -178,7 +189,7 @@ public class MainActivity extends AppCompatActivity
     private Fragment getCompletedObjectivesFragment() {
         if(mCompletedObjectivesFragment == null) {
             mCompletedObjectivesFragment = new CompletedObjectivesFragment();
-            mCompletedObjectivesFragment.initialize(mRemoteClient,"user1");
+            mCompletedObjectivesFragment.initialize(mRemoteClient,mAccountName);
         }
 
         return mCompletedObjectivesFragment;

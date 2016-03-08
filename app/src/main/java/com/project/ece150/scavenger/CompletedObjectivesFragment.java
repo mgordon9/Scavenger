@@ -1,23 +1,19 @@
 package com.project.ece150.scavenger;
 
 import android.app.Activity;
-import android.app.ListFragment;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
 import android.widget.ListView;
-import android.widget.TextView;
 
 import com.project.ece150.scavenger.remote.IRemoteClientObserver;
 import com.project.ece150.scavenger.remote.RemoteClient;
 
-import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 
@@ -25,10 +21,10 @@ public class CompletedObjectivesFragment extends Fragment implements IRemoteClie
 
     RemoteClient mRemoteClient;
     private String _username;
-    int[] rowColors;
-    Bitmap[] objectiveThumbnails;
-    String[] objectiveDetails;
-    String[] objectiveNames;// = {"obj1", "obj2", "obj3", "obj4", "obj5","obj1", "obj2", "obj3", "obj4", "obj5","obj1", "obj2", "obj3", "obj4", "obj5","obj1", "obj2", "obj3", "obj4", "obj5"};
+    private static int[] rowColors;
+    private static Bitmap[] objectiveThumbnails;
+    private static String[] objectiveDetails;
+    private static String[] objectiveNames;
     private static ListView completedList;
 
 
@@ -56,10 +52,6 @@ public class CompletedObjectivesFragment extends Fragment implements IRemoteClie
         View rootView = inflater.inflate(R.layout.fragment_completedobjectives, container, false);
         completedList = (ListView) rootView.findViewById(R.id.listView);
         mRemoteClient.initUserGetRequest(_username);
-
-        //ArrayAdapter<String> adapter = new ArrayAdapter<String>(getActivity(),R.layout.list_item_layout,objectiveNames);
-        //completedList.setAdapter(adapter);
-
         // Inflate the layout for this fragment
         return rootView;
     }
@@ -76,7 +68,10 @@ public class CompletedObjectivesFragment extends Fragment implements IRemoteClie
 
     @Override
     public void onUserGetReceived(IUser user) {
-        List<IObjective> completedObjectives = user.getLocationObjectives();
+        List<IObjective> completedLocationObjectives = user.getLocationObjectives();
+        List<IObjective> completedImageObjectives = user.getVisualObjectives();
+        List<IObjective> completedObjectives= parseObjectives(completedLocationObjectives,completedImageObjectives);
+
         if (completedObjectives != null) {
             int size = completedObjectives.size();
             objectiveNames = new String[size];
@@ -91,33 +86,33 @@ public class CompletedObjectivesFragment extends Fragment implements IRemoteClie
                 objectiveThumbnails[i] = b;
                 if((o.isVisitedGPS() && o.isVisitedVisual())){
                     objectiveDetails[i] = "Objective Complete! Good Job";
-                    rowColors[i] = Color.argb(160,19,119,22);
+                    rowColors[i] = Color.argb(90,19,119,22);
                 }
                 else if(o.isVisitedVisual()){
                     objectiveDetails[i] = "Objective Visually Confirmed, Location Confirmation Incomplete";
-                    rowColors[i] = Color.argb(160,235,247,56);
+                    rowColors[i] = Color.argb(90,235,247,56);
                 }
                 else if(o.isVisitedGPS()){
                     objectiveDetails[i] = "Objective Positionally Confirmed, Visual Confirmation Incomplete";
-                    rowColors[i] = Color.argb(160,235,247,56);
+                    rowColors[i] = Color.argb(90,235,247,56);
                 }
                 else{
                     objectiveDetails[i] = "Objective Incomplete! Get to Work!!!";
-                    rowColors[i] = Color.argb(160,249,25,25);
+                    rowColors[i] = Color.argb(90,249,25,25);
                 }
-
                 i++;
             }
+
         }
         else{
-            Log.e("poop", " is null af");
             objectiveNames = new String[1];
-            objectiveNames[0] = "No objectives completed :(";
+            objectiveNames[0] = "No objectives completed ";
+            rowColors = new int[1];
+            rowColors[0] = Color.argb(90,249,25,25);
+
         }
 
         CustomListAdapter adapter = new CustomListAdapter(getActivity(), objectiveNames,objectiveDetails,objectiveThumbnails,rowColors);
-
-        //ArrayAdapter<String> adapter = new ArrayAdapter<String>(getActivity(),R.layout.list_item_layout,objectiveNames);
         completedList.setAdapter(adapter);
     }
 
@@ -129,6 +124,94 @@ public class CompletedObjectivesFragment extends Fragment implements IRemoteClie
     @Override
     public void onObjectiveGetReceived(IObjective objective) {
 
+    }
+
+    @Override
+    public void onObjectiveCreated() {
+
+    }
+
+    private List<IObjective> parseObjectives(List<IObjective> locationObjectives, List<IObjective> visualObjectives) {
+        List<IObjective> objectives = new LinkedList<IObjective>();
+
+        if(locationObjectives == null && visualObjectives == null) {
+            return null;
+        }
+
+        if(locationObjectives != null && visualObjectives == null) {
+            for(IObjective o : locationObjectives) {
+                Objective obj = (Objective) o;
+                obj.setVisitedGPS(true);
+                obj.setVisitedVisual(false);
+                objectives.add(obj);
+            }
+        }
+
+        if(locationObjectives == null && visualObjectives != null) {
+            for(IObjective o : visualObjectives) {
+                Objective obj = (Objective) o;
+                obj.setVisitedGPS(false);
+                obj.setVisitedVisual(true);
+                objectives.add(obj);
+            }
+        }
+
+        if(locationObjectives != null && visualObjectives != null) {
+            List<IObjective> remainingVisualObjectives = visualObjectives;
+
+            for(IObjective o : locationObjectives) {
+                Objective obj = (Objective) o;
+                if(containsObjectiveById(visualObjectives, o)) {
+                    remainingVisualObjectives = removeObjectiveById(remainingVisualObjectives, o);
+
+                    obj.setVisitedGPS(true);
+                    obj.setVisitedVisual(true);
+                } else {
+                    obj.setVisitedGPS(true);
+                    obj.setVisitedVisual(false);
+                }
+                objectives.add(obj);
+            }
+
+            for(IObjective o : remainingVisualObjectives) {
+                Objective obj = (Objective) o;
+
+                obj.setVisitedGPS(false);
+                obj.setVisitedVisual(true);
+
+                objectives.add(obj);
+            }
+        }
+
+        return objectives;
+    }
+
+    private boolean containsObjectiveById(List<IObjective> objectives, IObjective objective) {
+        if(objectives == null || objective == null) {
+            return false;
+        }
+
+        for(IObjective o : objectives) {
+            if(o.getObjectiveid().equals(objective.getObjectiveid()))
+                return true;
+        }
+
+        return false;
+    }
+
+    private List<IObjective> removeObjectiveById(List<IObjective> objectives, IObjective objective) {
+        if(objectives == null || objective == null) {
+            return null;
+        }
+
+        List<IObjective> retObjectives = new LinkedList<IObjective>();
+
+        for(IObjective o : objectives) {
+            if(o.getObjectiveid().equals(objective.getObjectiveid()) == false)
+                retObjectives.add(o);
+        }
+
+        return retObjectives;
     }
 }
 

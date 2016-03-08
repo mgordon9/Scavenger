@@ -10,4 +10,5 @@ public interface IRemoteClientObserver {
     void onUserGetReceived(IUser user);
     void onObjectivesGetReceived(List<IObjective> objectives);
     void onObjectiveGetReceived(IObjective objective);
+    void onObjectiveCreated();
 }

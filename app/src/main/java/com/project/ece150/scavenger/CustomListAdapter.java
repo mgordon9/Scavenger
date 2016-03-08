@@ -40,12 +40,21 @@ public class CustomListAdapter extends ArrayAdapter<String> {
         ImageView imageView = (ImageView) rowView.findViewById(R.id.icon);
         TextView extratxt = (TextView) rowView.findViewById(R.id.textView1);
 
-
         txtTitle.setText(itemname[position]);
-        imageView.setImageBitmap(imgid[position]);
-        extratxt.setText(details[position]);
+        if (imgid != null) {
+            imageView.setImageBitmap(imgid[position]);
+        }
+        else{
+            imageView.setImageResource(R.drawable.sad);
+        }
+        if (details != null) {
+            extratxt.setText(details[position]);
+        }
+        if (colors!=null){
         rowView.getBackground().setColorFilter(colors[position], PorterDuff.Mode.SRC_IN);
+        }
+
         return rowView;
 
-    };
+    }
 }

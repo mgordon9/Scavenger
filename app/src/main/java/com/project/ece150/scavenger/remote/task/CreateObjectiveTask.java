@@ -24,10 +24,12 @@ import java.nio.charset.StandardCharsets;
  */
 public class CreateObjectiveTask extends AsyncTask<String, String, Integer> {
 
+    private ICreateObjectiveObserver _observer;
     private ObjectiveParser _parser;
     private IObjective _objective;
 
-    public CreateObjectiveTask(ObjectiveParser parser, IObjective objective) {
+    public CreateObjectiveTask(ICreateObjectiveObserver observer, ObjectiveParser parser, IObjective objective) {
+        _observer = observer;
         _parser = parser;
         _objective = objective;
     }
@@ -67,6 +69,8 @@ public class CreateObjectiveTask extends AsyncTask<String, String, Integer> {
             }
 
             urlConnection.connect();
+
+            _observer.onObjectiveCreated();
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
