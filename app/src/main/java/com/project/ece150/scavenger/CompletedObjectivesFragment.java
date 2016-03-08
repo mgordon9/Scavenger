@@ -13,6 +13,7 @@ import android.widget.ListView;
 import com.project.ece150.scavenger.remote.IRemoteClientObserver;
 import com.project.ece150.scavenger.remote.RemoteClient;
 
+import java.util.LinkedList;
 import java.util.List;
 
 
@@ -123,6 +124,89 @@ public class CompletedObjectivesFragment extends Fragment implements IRemoteClie
     @Override
     public void onObjectiveGetReceived(IObjective objective) {
 
+    }
+
+    private List<IObjective> parseObjectives(List<IObjective> locationObjectives, List<IObjective> visualObjectives) {
+        List<IObjective> objectives = new LinkedList<IObjective>();
+
+        if(locationObjectives == null && visualObjectives == null) {
+            return null;
+        }
+
+        if(locationObjectives != null && visualObjectives == null) {
+            for(IObjective o : locationObjectives) {
+                Objective obj = (Objective) o;
+                obj.setVisitedGPS(true);
+                obj.setVisitedVisual(false);
+                objectives.add(obj);
+            }
+        }
+
+        if(locationObjectives == null && visualObjectives != null) {
+            for(IObjective o : visualObjectives) {
+                Objective obj = (Objective) o;
+                obj.setVisitedGPS(false);
+                obj.setVisitedVisual(true);
+                objectives.add(obj);
+            }
+        }
+
+        if(locationObjectives != null && visualObjectives != null) {
+            List<IObjective> remainingVisualObjectives = visualObjectives;
+
+            for(IObjective o : locationObjectives) {
+                Objective obj = (Objective) o;
+                if(containsObjectiveById(visualObjectives, o)) {
+                    remainingVisualObjectives = removeObjectiveById(remainingVisualObjectives, o);
+
+                    obj.setVisitedGPS(true);
+                    obj.setVisitedVisual(true);
+                } else {
+                    obj.setVisitedGPS(true);
+                    obj.setVisitedVisual(false);
+                }
+                objectives.add(obj);
+            }
+
+            for(IObjective o : remainingVisualObjectives) {
+                Objective obj = (Objective) o;
+
+                obj.setVisitedGPS(false);
+                obj.setVisitedVisual(true);
+
+                objectives.add(obj);
+            }
+        }
+
+        return objectives;
+    }
+
+    private boolean containsObjectiveById(List<IObjective> objectives, IObjective objective) {
+        if(objectives == null || objective == null) {
+            return false;
+        }
+
+        for(IObjective o : objectives) {
+            if(o.getObjectiveid().equals(objective.getObjectiveid()))
+                return true;
+        }
+
+        return false;
+    }
+
+    private List<IObjective> removeObjectiveById(List<IObjective> objectives, IObjective objective) {
+        if(objectives == null || objective == null) {
+            return null;
+        }
+
+        List<IObjective> retObjectives = new LinkedList<IObjective>();
+
+        for(IObjective o : objectives) {
+            if(o.getObjectiveid().equals(objective.getObjectiveid()) == false)
+                retObjectives.add(o);
+        }
+
+        return retObjectives;
     }
 }
 
