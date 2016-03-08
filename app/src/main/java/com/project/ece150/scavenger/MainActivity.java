@@ -184,7 +184,7 @@ public class MainActivity extends AppCompatActivity
     private Fragment getCompletedObjectivesFragment() {
         if(mCompletedObjectivesFragment == null) {
             mCompletedObjectivesFragment = new CompletedObjectivesFragment();
-            mCompletedObjectivesFragment.initialize(mRemoteClient,"user1");
+            mCompletedObjectivesFragment.initialize(mRemoteClient,mAccountName);
         }
 
         return mCompletedObjectivesFragment;
