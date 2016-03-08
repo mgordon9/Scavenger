@@ -19,15 +19,15 @@ import java.util.TreeSet;
 
 /**
  * {@link RecyclerView.Adapter} that can display a {@link IObjective} and makes a call to the
- * specified {@link ObjectivesFragment.OnListFragmentInteractionListener}.
+ * specified {@link OnListFragmentInteractionListener}.
  */
 public class PickObjectiveRecyclerViewAdapter extends RecyclerView.Adapter<PickObjectiveRecyclerViewAdapter.ViewHolder> {
 
     private final HashMap<Integer, IObjective> mDistanceObjectiveMap;
     private final List<Integer> mSortedDist;
-    private final ObjectivesFragment.OnListFragmentInteractionListener mListener;
+    private final OnListFragmentInteractionListener mListener;
 
-    public PickObjectiveRecyclerViewAdapter(List<IObjective> items, ObjectivesFragment.OnListFragmentInteractionListener listener) {
+    public PickObjectiveRecyclerViewAdapter(List<IObjective> items, OnListFragmentInteractionListener listener) {
         Location location = LocationServices.FusedLocationApi.getLastLocation(
                 MapFragment.mGoogleApiClient);
         HashMap unsortedMap = new HashMap();

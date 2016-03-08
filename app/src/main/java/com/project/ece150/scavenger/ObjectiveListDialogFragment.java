@@ -21,7 +21,7 @@ import java.util.List;
 public class ObjectiveListDialogFragment extends DialogFragment
         implements IRemoteClientObserver {
 
-    private ObjectivesFragment.OnListFragmentInteractionListener mListener;
+    private OnListFragmentInteractionListener mListener;
     private RecyclerView mRecyclerView;
     private String mTitle;
     private Button mCompareButton;
@@ -30,7 +30,7 @@ public class ObjectiveListDialogFragment extends DialogFragment
         // Required empty public constructor
     }
 
-    public void setListener(ObjectivesFragment.OnListFragmentInteractionListener listener)
+    public void setListener(OnListFragmentInteractionListener listener)
     {
         mListener = listener;
     }

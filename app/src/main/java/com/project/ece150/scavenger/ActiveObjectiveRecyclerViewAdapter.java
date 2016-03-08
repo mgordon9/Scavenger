@@ -10,7 +10,7 @@ import android.widget.TextView;
 
 /**
  * {@link RecyclerView.Adapter} that can display a {@link IObjective} and makes a call to the
- * specified {@link ObjectivesFragment.OnListFragmentInteractionListener}.
+ * specified {@link OnListFragmentInteractionListener}.
  */
 public class ActiveObjectiveRecyclerViewAdapter extends RecyclerView.Adapter<ActiveObjectiveRecyclerViewAdapter.ViewHolder> {
 

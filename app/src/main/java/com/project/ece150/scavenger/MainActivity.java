@@ -117,17 +117,14 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public void onUserGetReceived(IUser user) {
-        Toast.makeText(MainActivity.this, "update users", Toast.LENGTH_SHORT).show();
     }
 
     @Override
     public void onObjectivesGetReceived(List<IObjective> objectives) {
-        Toast.makeText(MainActivity.this, "update objectives", Toast.LENGTH_SHORT).show();
     }
 
     @Override
     public void onObjectiveGetReceived(IObjective objective) {
-        Toast.makeText(MainActivity.this, "update objective", Toast.LENGTH_SHORT).show();
     }
 
     @Override

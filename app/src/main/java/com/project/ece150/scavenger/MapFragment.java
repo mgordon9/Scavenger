@@ -10,6 +10,8 @@ import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
+import android.text.SpannableString;
+import android.text.style.UnderlineSpan;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,7 +20,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
@@ -40,7 +41,7 @@ import java.util.List;
 public class MapFragment extends Fragment
         implements OnMapReadyCallback,
         GoogleMap.OnMyLocationButtonClickListener,
-        ObjectivesFragment.OnListFragmentInteractionListener,
+        OnListFragmentInteractionListener,
         IRemoteClientObserver,
         View.OnClickListener,
         LocationListener,
@@ -49,7 +50,7 @@ public class MapFragment extends Fragment
 
     private static final int MY_LOCATION_PERMISSION_REQUEST_CODE = 1;
     private static final long UPDATE_INTERVAL = 3000;
-    public static final int RADIUS = 100;
+    public static final int RADIUS = 120;
 
     private GoogleMap mMap;
     private LocationManager mLocationManager;
@@ -61,7 +62,8 @@ public class MapFragment extends Fragment
     private ObjectiveListDialogFragment mObjectiveListDialogFragment;
     private ActiveObjectiveDialogFragment mActiveObjectiveDialogFragment;
     private IObjective mCurrentObjective;
-    private TextView mTextButton;
+    private TextView mAvailableObjectivesTextButton;
+    private TextView mSelectOneCancelTextButton;
     private LocationRequest mLocationRequest;
     private Location mBestReading;
     public static GoogleApiClient mGoogleApiClient;
@@ -92,42 +94,31 @@ public class MapFragment extends Fragment
 
         View view = (RelativeLayout) inflater.inflate(R.layout.fragment_map, container, false);
 
-        mTextButton = (TextView)view.findViewById(R.id.open_dialog_text);
-        mTextButton.setClickable(true);
-        mTextButton.setOnClickListener(this);
-        mTextButton.setText("No Objective Selected");
+        String availableObjectivesText = "No Objective Selected";
+        mAvailableObjectivesTextButton = (TextView)view.findViewById(R.id.open_dialog_text);
+        mAvailableObjectivesTextButton.setClickable(true);
+        mAvailableObjectivesTextButton.setOnClickListener(this);
+        mAvailableObjectivesTextButton.setText(availableObjectivesText);
+
+        String selectText = "Select One";
+        SpannableString content = new SpannableString(selectText);
+        content.setSpan(new UnderlineSpan(), 0, content.length(), 0);
+        mSelectOneCancelTextButton = (TextView)view.findViewById(R.id.select_one_text);
+        mSelectOneCancelTextButton.setClickable(true);
+        mSelectOneCancelTextButton.setOnClickListener(this);
+        mSelectOneCancelTextButton.setText(content);
 
         mLocationRequest = LocationRequest.create();
         mLocationRequest.setInterval(UPDATE_INTERVAL);
         mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
-
         mGoogleApiClient = new GoogleApiClient.Builder(getContext())
                 .addApi(LocationServices.API)
                 .addConnectionCallbacks(this)
                 .addOnConnectionFailedListener(this)
                 .build();
         mGoogleApiClient.connect();
-//        checkPlayServices();
 
         return view;
-    }
-
-    private boolean checkPlayServices() {
-        int resultCode = GooglePlayServicesUtil
-                .isGooglePlayServicesAvailable(getActivity());
-        if (resultCode != ConnectionResult.SUCCESS) {
-            if (GooglePlayServicesUtil.isUserRecoverableError(resultCode)) {
-                GooglePlayServicesUtil.getErrorDialog(resultCode, getActivity(),
-                        1000).show();
-            } else {
-                Toast.makeText(getContext(),
-                        "This device is not supported.", Toast.LENGTH_LONG)
-                        .show();
-//                finish();
-            }
-            return false;
-        }
-        return true;
     }
 
     @Override
@@ -188,6 +179,10 @@ public class MapFragment extends Fragment
         scavengerHuntActive = true;
         mCurrentObjective = item;
 
+        SpannableString content = new SpannableString("Cancel");
+        content.setSpan(new UnderlineSpan(), 0, content.length(), 0);
+        mSelectOneCancelTextButton.setText(content);
+
         //randomizing the circles center
         double randLat = ((Math.random() * 2.0 - 1.0) * (double)RADIUS / 111320.0) + mCurrentObjective.getLatitude();
         double randLong = ((Math.random() * 2.0 - 1.0) * (double)RADIUS / 111320.0) + mCurrentObjective.getLongitude();
@@ -200,7 +195,6 @@ public class MapFragment extends Fragment
                 .strokeColor(Color.BLUE)
                 .strokeWidth((float) 0)
                 .fillColor(0x8087CEFA));
-//        mMap.addMarker(new MarkerOptions().position(new LatLng(mCurrentObjective.getLatitude(), mCurrentObjective.getLongitude())).title(item.getTitle()));
         mMap.moveCamera(CameraUpdateFactory.newLatLng(objectiveArea));
         mMap.animateCamera(CameraUpdateFactory.zoomTo(16.0f));
 
@@ -211,7 +205,7 @@ public class MapFragment extends Fragment
         double distance = Math.sqrt(lat * lat + longitude * longitude);
         int distanceMeters = (int)(distance * 111320.0);
 
-        mTextButton.setText("Objective Active     Distance: " + ((Integer) distanceMeters).toString() + " meters");
+        mAvailableObjectivesTextButton.setText("Objective Active     Distance: " + ((Integer) distanceMeters).toString() + " meters");
     }
 
     @Override
@@ -246,12 +240,22 @@ public class MapFragment extends Fragment
             mClient.initObjectivesGetRequest();
         }
         else {
-
-            mActiveObjectiveDialogFragment = new ActiveObjectiveDialogFragment();
-            mActiveObjectiveDialogFragment.setListener(this);
-            mActiveObjectiveDialogFragment.setTitle("Current Objective");
-            mActiveObjectiveDialogFragment.show(fm, "active_objective");
-            mClient.initObjectiveGetRequest(mCurrentObjective.getObjectiveid());
+            if(v.equals(mSelectOneCancelTextButton))
+            {
+                mAvailableObjectivesTextButton.setText("No Objective Selected");
+                SpannableString content = new SpannableString("Select One");
+                content.setSpan(new UnderlineSpan(), 0, content.length(), 0);
+                mSelectOneCancelTextButton.setText(content);
+                mMap.clear();
+                scavengerHuntActive = false;
+            }
+            else {
+                mActiveObjectiveDialogFragment = new ActiveObjectiveDialogFragment();
+                mActiveObjectiveDialogFragment.setListener(this);
+                mActiveObjectiveDialogFragment.setTitle("Current Objective");
+                mActiveObjectiveDialogFragment.show(fm, "active_objective");
+                mClient.initObjectiveGetRequest(mCurrentObjective.getObjectiveid());
+            }
         }
 
     }
@@ -260,12 +264,10 @@ public class MapFragment extends Fragment
     public void onConnected(Bundle bundle) {
         LocationServices.FusedLocationApi.requestLocationUpdates(
                 mGoogleApiClient, mLocationRequest, this);
-        Toast.makeText(getActivity(), "OnConnected", Toast.LENGTH_SHORT).show();
     }
 
     @Override
     public void onConnectionSuspended(int i) {
-        Toast.makeText(getActivity(), "Connection Suspended", Toast.LENGTH_SHORT).show();
     }
 
     @Override
@@ -282,17 +284,20 @@ public class MapFragment extends Fragment
                 mClient.initUserAddObjectiveRequest(mAccountName, mCurrentObjective.getObjectiveid(), EObjectiveConfirmedType.LOCATIONCONFIRMED);
                 Toast.makeText(getActivity(), "Location Confirmed, Congratulations!!", Toast.LENGTH_SHORT).show();
             }
-            mTextButton.setText("Objective Active\nDistance: " + ((Integer) distanceMeters).toString() + " meters");
+            mAvailableObjectivesTextButton.setText("Objective Active\nDistance: " + ((Integer) distanceMeters).toString() + " meters");
         }
-//        Toast.makeText(getActivity(), location.toString(), Toast.LENGTH_SHORT).show();
     }
 
     @Override
     public void onConnectionFailed(ConnectionResult connectionResult) {
-        Toast.makeText(getActivity(), "Connection Failed", Toast.LENGTH_SHORT).show();
     }
 
     public IObjective getCurrentObjective() {
         return mCurrentObjective;
     }
+}
+
+interface OnListFragmentInteractionListener {
+    // TODO: Update argument type and name
+    void onListFragmentInteraction(IObjective item);
 }

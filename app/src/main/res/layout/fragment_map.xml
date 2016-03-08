@@ -5,7 +5,6 @@
     android:orientation="vertical"
     tools:context="com.project.ece150.scavenger.MapFragment">
 
-
     <fragment xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:map="http://schemas.android.com/apk/res-auto"
         xmlns:tools="http://schemas.android.com/tools"
@@ -15,15 +14,42 @@
         android:layout_height="match_parent"
         tools:context="com.google.android.gms.maps.MapFragment" />
 
+
+
     <TextView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:gravity="left"
+        android:layout_height="35dp"
+        android:gravity="center_vertical|left"
         android:layout_alignBottom="@id/map"
         android:textColor="@color/text_primary"
-        android:textSize="18sp"
+        android:textSize="15sp"
         android:background="@color/colorPrimary"
-        android:id="@+id/open_dialog_text" />
+        android:id="@+id/open_dialog_text"
+        android:layout_alignLeft="@+id/select_one_text"
+        android:layout_alignParentLeft="true"
+        android:paddingLeft="5dp"/>
 
+    <!--<TextView-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="35dp"-->
+        <!--android:gravity="center_vertical|start"-->
+        <!--android:textColor="@color/text_primary"-->
+        <!--android:textSize="15sp"-->
+        <!--android:background="@color/colorPrimary"-->
+        <!--android:id="@+id/open_dialog_text"-->
+        <!--android:layout_alignTop="@id/map"-->
+        <!--/>-->
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="35dp"
+        android:gravity="center_vertical|right"
+        android:textColor="#5FB1EA"
+        android:textSize="15sp"
+        android:background="@color/colorPrimary"
+        android:id="@+id/select_one_text"
+        android:layout_alignBottom="@+id/map"
+        android:layout_alignParentRight="true"
+        android:paddingRight="5dp"/>
 
 </RelativeLayout>

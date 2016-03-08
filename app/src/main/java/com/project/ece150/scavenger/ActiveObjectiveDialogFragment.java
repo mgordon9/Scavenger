@@ -1,6 +1,5 @@
 package com.project.ece150.scavenger;
 
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
@@ -15,7 +14,6 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.LinearLayout;
 
-import com.project.ece150.scavenger.remote.EObjectiveConfirmedType;
 import com.project.ece150.scavenger.remote.IRemoteClientObserver;
 
 import java.io.FileOutputStream;
@@ -26,7 +24,7 @@ public class ActiveObjectiveDialogFragment extends DialogFragment
         implements IRemoteClientObserver,
         View.OnClickListener{
 
-    private ObjectivesFragment.OnListFragmentInteractionListener mListener;
+    private OnListFragmentInteractionListener mListener;
     private RecyclerView mRecyclerView;
     private String mTitle;
     private Button mCompareButton;
@@ -35,7 +33,7 @@ public class ActiveObjectiveDialogFragment extends DialogFragment
         // Required empty public constructor
     }
 
-    public void setListener(ObjectivesFragment.OnListFragmentInteractionListener listener)
+    public void setListener(OnListFragmentInteractionListener listener)
     {
         mListener = listener;
     }
