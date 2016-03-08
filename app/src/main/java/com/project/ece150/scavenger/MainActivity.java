@@ -15,6 +15,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.MenuItem;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.auth.GoogleAuthUtil;
@@ -142,7 +143,20 @@ public class MainActivity extends AppCompatActivity
                     mAccountName = data.getStringExtra(
                             AccountManager.KEY_ACCOUNT_NAME);
 
+                    // Create User
                     createUserIfNeccessary(mAccountName);
+
+                    // Set navbar texts
+                    String[] name = mAccountName.split("@");
+                    TextView nameText = (TextView) findViewById(R.id.blah);
+                    if(name.length > 1) {
+                        nameText.setText(name[0]);
+                    } else {
+                        nameText.setText("Scavenger");
+                    }
+
+                    TextView emailText = (TextView) findViewById(R.id.textView);
+                    emailText.setText(mAccountName);
 
                     // !! HACK: Initialize mAccountName again as it has been null when initilized the first time !!
                     mMapFragment.initialize(mRemoteClient, mAccountName);
