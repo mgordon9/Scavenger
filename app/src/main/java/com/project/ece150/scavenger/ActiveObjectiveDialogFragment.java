@@ -68,6 +68,11 @@ public class ActiveObjectiveDialogFragment extends DialogFragment
     }
 
     @Override
+    public void onObjectiveCreated() {
+
+    }
+
+    @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         AlertDialog.Builder b =  new  AlertDialog.Builder(getActivity())
                 .setTitle(mTitle)

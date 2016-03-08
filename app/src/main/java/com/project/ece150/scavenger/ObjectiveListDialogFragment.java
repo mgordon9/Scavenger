@@ -19,7 +19,7 @@ import java.util.List;
  *
  */
 public class ObjectiveListDialogFragment extends DialogFragment
-        implements IRemoteClientObserver{
+        implements IRemoteClientObserver {
 
     private ObjectivesFragment.OnListFragmentInteractionListener mListener;
     private RecyclerView mRecyclerView;
@@ -59,6 +59,11 @@ public class ObjectiveListDialogFragment extends DialogFragment
 
     @Override
     public void onObjectiveGetReceived(IObjective objective) {
+
+    }
+
+    @Override
+    public void onObjectiveCreated() {
 
     }
 

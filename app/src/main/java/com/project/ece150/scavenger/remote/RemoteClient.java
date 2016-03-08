@@ -10,6 +10,7 @@ import com.project.ece150.scavenger.remote.task.CreateUserTask;
 import com.project.ece150.scavenger.remote.task.GetObjectiveTask;
 import com.project.ece150.scavenger.remote.task.GetObjectivesTask;
 import com.project.ece150.scavenger.remote.task.GetUserTask;
+import com.project.ece150.scavenger.remote.task.ICreateObjectiveObserver;
 import com.project.ece150.scavenger.remote.task.IGetObjectiveTaskObserver;
 import com.project.ece150.scavenger.remote.task.IGetObjectivesTaskObserver;
 import com.project.ece150.scavenger.remote.task.IGetUserTaskObserver;
@@ -21,7 +22,11 @@ import java.util.List;
 /**
  * This Object stores/receives entities.
  */
-public class RemoteClient implements IGetUserTaskObserver, IGetObjectivesTaskObserver, IGetObjectiveTaskObserver {
+public class RemoteClient implements
+        IGetUserTaskObserver,
+        IGetObjectivesTaskObserver,
+        IGetObjectiveTaskObserver,
+        ICreateObjectiveObserver {
 
     private List<IRemoteClientObserver> _observers;
     private UserParser _userParser;
@@ -92,7 +97,7 @@ public class RemoteClient implements IGetUserTaskObserver, IGetObjectivesTaskObs
      * @param objective     The objective to store. All fields will be in the database representation
      */
     public void initObjectivesCreateRequest(IObjective objective) {
-        CreateObjectiveTask task = new CreateObjectiveTask(_objectiveParser, objective);
+        CreateObjectiveTask task = new CreateObjectiveTask(this, _objectiveParser, objective);
         task.execute(_resourceURI + "/rest/objectives");
     }
 
@@ -126,6 +131,13 @@ public class RemoteClient implements IGetUserTaskObserver, IGetObjectivesTaskObs
     public void onObjectiveGetReceived(IObjective objective) {
         for(IRemoteClientObserver observer : _observers) {
             observer.onObjectiveGetReceived(objective);
+        }
+    }
+
+    @Override
+    public void onObjectiveCreated() {
+        for(IRemoteClientObserver observer : _observers) {
+            observer.onObjectiveCreated();
         }
     }
 }

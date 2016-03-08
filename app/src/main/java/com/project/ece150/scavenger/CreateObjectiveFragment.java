@@ -20,13 +20,16 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import com.project.ece150.scavenger.remote.IRemoteClientObserver;
 import com.project.ece150.scavenger.remote.RemoteClient;
 
 import java.io.File;
 import java.net.URI;
+import java.util.List;
 
 
-public class CreateObjectiveFragment extends Fragment {
+public class CreateObjectiveFragment extends Fragment
+        implements IRemoteClientObserver {
 
     static final int REQUEST_IMAGE_CAPTURE = 1;
 
@@ -175,5 +178,25 @@ public class CreateObjectiveFragment extends Fragment {
 
     public void storeInDatabase(Objective objective, Bitmap image) {
         mRemoteClient.initObjectivesCreateRequest(objective);
+    }
+
+    @Override
+    public void onUserGetReceived(IUser user) {
+
+    }
+
+    @Override
+    public void onObjectivesGetReceived(List<IObjective> objectives) {
+
+    }
+
+    @Override
+    public void onObjectiveGetReceived(IObjective objective) {
+
+    }
+
+    @Override
+    public void onObjectiveCreated() {
+
     }
 }

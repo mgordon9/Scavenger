@@ -130,6 +130,11 @@ public class MainActivity extends AppCompatActivity
     }
 
     @Override
+    public void onObjectiveCreated() {
+        Toast.makeText(MainActivity.this, "Objective created.", Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         switch (requestCode) {
             case PICK_ACCOUNT_REQUEST:

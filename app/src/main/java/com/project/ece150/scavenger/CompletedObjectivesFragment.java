@@ -126,6 +126,11 @@ public class CompletedObjectivesFragment extends Fragment implements IRemoteClie
 
     }
 
+    @Override
+    public void onObjectiveCreated() {
+
+    }
+
     private List<IObjective> parseObjectives(List<IObjective> locationObjectives, List<IObjective> visualObjectives) {
         List<IObjective> objectives = new LinkedList<IObjective>();
 
