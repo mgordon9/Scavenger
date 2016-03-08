@@ -58,7 +58,8 @@ public class MainActivity extends AppCompatActivity
 
         showGoogleAccountPicker();
 
-        mRemoteClient = new RemoteClient("http://scavenger-game.appspot.com");
+        //mRemoteClient = new RemoteClient("http://scavenger-game.appspot.com");
+        mRemoteClient = new RemoteClient("http://192.168.0.7:8080");
         mRemoteClient.registerObserver(this);
         mLocationClient = new LocationClient(this);
 
@@ -137,6 +138,9 @@ public class MainActivity extends AppCompatActivity
                             AccountManager.KEY_ACCOUNT_NAME);
 
                     createUserIfNeccessary(mAccountName);
+
+                    // !! HACK: Initialize mAccountName again as it has been null when initilized the first time !!
+                    mMapFragment.initialize(mRemoteClient, mAccountName);
                 } else if (resultCode == RESULT_CANCELED) {
                     Toast.makeText(this, "This application requires a Google account.",
                             Toast.LENGTH_SHORT).show();
