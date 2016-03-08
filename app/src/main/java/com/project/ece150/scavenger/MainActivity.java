@@ -132,7 +132,6 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public void onObjectiveCreated() {
-        Toast.makeText(MainActivity.this, "Objective created.", Toast.LENGTH_SHORT).show();
     }
 
     @Override
@@ -191,7 +190,7 @@ public class MainActivity extends AppCompatActivity
         mRemoteClient.initUserCreateRequest(accountName);
     }
 
-    private Fragment getMapFragment() {
+    public Fragment getMapFragment() {
         if(mMapFragment == null) {
             mMapFragment = new MapFragment();
             mMapFragment.initialize(mRemoteClient, mAccountName);
@@ -200,7 +199,7 @@ public class MainActivity extends AppCompatActivity
         return mMapFragment;
     }
 
-    private Fragment getCompletedObjectivesFragment() {
+    public Fragment getCompletedObjectivesFragment() {
         if(mCompletedObjectivesFragment == null) {
             mCompletedObjectivesFragment = new CompletedObjectivesFragment();
             mCompletedObjectivesFragment.initialize(mRemoteClient,mAccountName);
@@ -209,16 +208,16 @@ public class MainActivity extends AppCompatActivity
         return mCompletedObjectivesFragment;
     }
 
-    private Fragment getCreateObjectiveFragment() {
+    public Fragment getCreateObjectiveFragment() {
         if(mCreateObjectiveFragment == null) {
             mCreateObjectiveFragment = new CreateObjectiveFragment();
-            ((CreateObjectiveFragment) mCreateObjectiveFragment).initialize(mRemoteClient, mLocationClient, mAccountName);
+            ((CreateObjectiveFragment) mCreateObjectiveFragment).initialize(mRemoteClient, mLocationClient, mAccountName, this);
         }
 
         return mCreateObjectiveFragment;
     }
 
-    private void selectFragment(Fragment fragment) {
+    public void selectFragment(Fragment fragment) {
         if (fragment != null) {
             FragmentManager fragmentManager = getSupportFragmentManager();
             FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
