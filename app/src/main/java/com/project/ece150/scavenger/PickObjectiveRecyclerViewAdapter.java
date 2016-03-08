@@ -1,5 +1,6 @@
 package com.project.ece150.scavenger;
 
+import android.location.Location;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -7,7 +8,14 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.google.android.gms.location.LocationServices;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 /**
  * {@link RecyclerView.Adapter} that can display a {@link IObjective} and makes a call to the
@@ -15,11 +23,31 @@ import java.util.List;
  */
 public class PickObjectiveRecyclerViewAdapter extends RecyclerView.Adapter<PickObjectiveRecyclerViewAdapter.ViewHolder> {
 
-    private final List<IObjective> mValues;
+    private final HashMap<Integer, IObjective> mDistanceObjectiveMap;
+    private final List<Integer> mSortedDist;
     private final ObjectivesFragment.OnListFragmentInteractionListener mListener;
 
     public PickObjectiveRecyclerViewAdapter(List<IObjective> items, ObjectivesFragment.OnListFragmentInteractionListener listener) {
-        mValues = items;
+        Location location = LocationServices.FusedLocationApi.getLastLocation(
+                MapFragment.mGoogleApiClient);
+        HashMap unsortedMap = new HashMap();
+        List<Integer> sortedDistances = new ArrayList<Integer>();
+
+        for (IObjective item: items) {
+            double lat = Math.abs(item.getLatitude() - location.getLatitude());
+            double longitude = Math.abs(item.getLongitude() - location.getLongitude());
+            double distance = Math.sqrt(lat * lat + longitude * longitude);
+            int distanceMeters = (int)(distance * 111320.0);
+            unsortedMap.put(distanceMeters,item);
+        }
+
+        SortedSet<Integer> sortedKeys = new TreeSet(unsortedMap.keySet());
+        Iterator it = sortedKeys.iterator();
+        while (it.hasNext()) {
+            sortedDistances.add((Integer) it.next());
+        }
+        mSortedDist = sortedDistances;
+        mDistanceObjectiveMap = unsortedMap;
         mListener = listener;
     }
 
@@ -33,9 +61,11 @@ public class PickObjectiveRecyclerViewAdapter extends RecyclerView.Adapter<PickO
 
     @Override
     public void onBindViewHolder(final ViewHolder holder, int position) {
-        holder.mItem = mValues.get(position);
-        holder.mThumbnail.setImageBitmap(mValues.get(position).getThumbnail());
-        holder.mContentView.setText(mValues.get(position).getTitle() + "\n" + mValues.get(position).getInfo());
+        holder.mItem = mDistanceObjectiveMap.get(mSortedDist.get(position));
+        holder.mThumbnail.setImageBitmap( mDistanceObjectiveMap.get(mSortedDist.get(position)).getThumbnail());
+        holder.mContentView.setText(mDistanceObjectiveMap.get(mSortedDist.get(position)).getTitle()
+                        + "\nWithin: " + mSortedDist.get(position) + " Meters"
+                        + "\n" + mDistanceObjectiveMap.get(mSortedDist.get(position)).getInfo());
 
         holder.mView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -51,7 +81,7 @@ public class PickObjectiveRecyclerViewAdapter extends RecyclerView.Adapter<PickO
 
     @Override
     public int getItemCount() {
-        return mValues.size();
+        return mDistanceObjectiveMap.size();
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {

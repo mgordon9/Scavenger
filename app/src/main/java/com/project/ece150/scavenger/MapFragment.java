@@ -64,7 +64,7 @@ public class MapFragment extends Fragment
     private TextView mTextButton;
     private LocationRequest mLocationRequest;
     private Location mBestReading;
-    private GoogleApiClient mGoogleApiClient;
+    public static GoogleApiClient mGoogleApiClient;
     private String mAccountName;
     private boolean locationConfirmed;
 
