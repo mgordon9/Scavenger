@@ -58,8 +58,8 @@ public class MainActivity extends AppCompatActivity
 
         showGoogleAccountPicker();
 
-        //mRemoteClient = new RemoteClient("http://scavenger-game.appspot.com");
-        mRemoteClient = new RemoteClient("http://192.168.0.7:8080");
+        mRemoteClient = new RemoteClient("http://scavenger-game.appspot.com");
+        //mRemoteClient = new RemoteClient("http://192.168.0.7:8080");
         mRemoteClient.registerObserver(this);
         mLocationClient = new LocationClient(this);
 
