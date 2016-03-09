@@ -1,6 +1,7 @@
 package com.project.ece150.scavenger;
 
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
@@ -15,6 +16,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -37,6 +39,9 @@ public class CreateObjectiveFragment extends Fragment
 
     RemoteClient mRemoteClient;
     LocationClient mLocationClient;
+    MainActivity mMainActivity;
+
+    ProgressDialog mProgress;
 
     // Image vars.
     private ImageView mImageView;
@@ -46,10 +51,13 @@ public class CreateObjectiveFragment extends Fragment
     public CreateObjectiveFragment() {
     }
 
-    public void initialize(RemoteClient remoteClient, LocationClient locationClient, String accountName) {
+    public void initialize(RemoteClient remoteClient, LocationClient locationClient, String accountName, MainActivity mainActivity) {
         mRemoteClient = remoteClient;
         mLocationClient = locationClient;
         mAccountName = accountName;
+        mMainActivity = mainActivity;
+
+        mRemoteClient.registerObserver(this);
     }
 
     @Override
@@ -146,7 +154,12 @@ public class CreateObjectiveFragment extends Fragment
                     Objective objective = parseToObjective(mImageBitmap);
                     storeInDatabase(objective, mImageBitmap);
 
-                    getActivity().getSupportFragmentManager().beginTransaction().remove(CreateObjectiveFragment.this).commit();
+                    mProgress = new ProgressDialog(getActivity());
+                    mProgress.setMessage("Creating Objective...");
+                    mProgress.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
+                    mProgress.setIndeterminate(true);
+                    mProgress.setProgress(0);
+                    mProgress.show();
                 }
             });
         }
@@ -187,7 +200,6 @@ public class CreateObjectiveFragment extends Fragment
 
     @Override
     public void onObjectivesGetReceived(List<IObjective> objectives) {
-
     }
 
     @Override
@@ -197,6 +209,17 @@ public class CreateObjectiveFragment extends Fragment
 
     @Override
     public void onObjectiveCreated() {
+        // Hide Keyboard
+        View view = getActivity().getCurrentFocus();
+        if (view != null) {
+            InputMethodManager imm = (InputMethodManager)getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+            imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+        }
 
+        // Show ProgressBar
+        mProgress.dismiss();
+
+        // Go to MapFragment
+        mMainActivity.selectFragment(mMainActivity.getMapFragment());
     }
 }

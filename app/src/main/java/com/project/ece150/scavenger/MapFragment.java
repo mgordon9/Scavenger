@@ -29,6 +29,7 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.UiSettings;
+import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
 import com.project.ece150.scavenger.remote.EObjectiveConfirmedType;
@@ -49,7 +50,7 @@ public class MapFragment extends Fragment
         GoogleApiClient.OnConnectionFailedListener{
 
     private static final int MY_LOCATION_PERMISSION_REQUEST_CODE = 1;
-    private static final long UPDATE_INTERVAL = 3000;
+    private static final long UPDATE_INTERVAL = 1000;
     public static final int RADIUS = 120;
 
     private GoogleMap mMap;
@@ -152,14 +153,19 @@ public class MapFragment extends Fragment
         }
         mMap.setMyLocationEnabled(true);
 
-        Location location = mLocationManager.getLastKnownLocation(mProvider);
+        Location location = mLocationManager.getLastKnownLocation(mLocationManager.getBestProvider(mCriteria, false));
+        if (location != null) {
+            mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(
+                    new LatLng(location.getLatitude(), location.getLongitude()), 13));
 
-        LatLng currentPos = new LatLng(location.getLatitude(), location.getLongitude());
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(currentPos));
-        mMap.animateCamera(CameraUpdateFactory.zoomTo(16.0f));
-
-        mMap.setOnMyLocationButtonClickListener(this);
-        mUiSettings = mMap.getUiSettings();
+            CameraPosition cameraPosition = new CameraPosition.Builder()
+                    .target(new LatLng(location.getLatitude(), location.getLongitude()))
+                    .zoom(17)
+                    .bearing(0)
+                    .tilt(40)
+                    .build();
+            mMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
+        }
     }
 
     @Override
