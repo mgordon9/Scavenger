@@ -51,7 +51,7 @@ public class MapFragment extends Fragment
 
     private static final int MY_LOCATION_PERMISSION_REQUEST_CODE = 1;
     private static final long UPDATE_INTERVAL = 1000;
-    public static final int RADIUS = 120;
+    public static final int RADIUS = 100;
 
     private GoogleMap mMap;
     private LocationManager mLocationManager;
@@ -197,7 +197,7 @@ public class MapFragment extends Fragment
         mMap.clear();
         mMap.addCircle(new CircleOptions()
                 .center(objectiveArea)
-                .radius(RADIUS)
+                .radius(RADIUS + 10)
                 .strokeColor(Color.BLUE)
                 .strokeWidth((float) 0)
                 .fillColor(0x8087CEFA));
@@ -263,7 +263,6 @@ public class MapFragment extends Fragment
                 mClient.initObjectiveGetRequest(mCurrentObjective.getObjectiveid());
             }
         }
-
     }
 
     @Override

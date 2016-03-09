@@ -86,5 +86,4 @@ public class ObjectiveListDialogFragment extends DialogFragment
         b.setView(view);
         return b.create();
     }
-
 }
