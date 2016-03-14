@@ -37,6 +37,8 @@ public class ObjectiveDatastoreConnector {
     e.setProperty("owner", td.getOwner());
     e.setProperty("otherConfirmedUsers", td.getOtherConfirmedUsers());
     e.setProperty("activity", td.getActivity());
+    e.setProperty("thumbnail", new Blob(td.getThumbnail().getBytes()));
+    e.setProperty("image", new Blob(td.getImage().getBytes()));
     e.setProperty("date", td.getDate());
     datastore.put(e);
 
@@ -54,16 +56,7 @@ public class ObjectiveDatastoreConnector {
     try {
       Key k = KeyFactory.createKey("Objective", keyname);
       Entity e = datastore.get(k);
-      Objective td = new Objective(
-              e.getKey().getName(),
-              (String) e.getProperty("title"),
-              (String) e.getProperty("info"),
-              (Double) e.getProperty("latitude"),
-              (Double) e.getProperty("longitude"),
-              (String) e.getProperty("owner"),
-              (String) e.getProperty("otherConfirmedUsers"),
-              (String) e.getProperty("activity"),
-              (Date) e.getProperty("date"));
+      Objective td = parseEntityToObjective(e);
       return td;
     } catch (EntityNotFoundException e) {
       return null;
@@ -83,16 +76,7 @@ public class ObjectiveDatastoreConnector {
 
     List<Objective> tdList = new LinkedList<>();
     for(Entity e : eList) {
-      Objective td = new Objective(
-              e.getKey().getName(),
-              (String) e.getProperty("title"),
-              (String) e.getProperty("info"),
-              (Double) e.getProperty("latitude"),
-              (Double) e.getProperty("longitude"),
-              (String) e.getProperty("owner"),
-              (String) e.getProperty("otherConfirmedUsers"),
-              (String) e.getProperty("activity"),
-              (Date) e.getProperty("date"));
+      Objective td = parseEntityToObjective(e);
       tdList.add(td);
     }
 
@@ -140,20 +124,41 @@ public class ObjectiveDatastoreConnector {
 
     List<Objective> tdList = new LinkedList<>();
     for(Entity e : eList) {
-      Objective td = new Objective(
-              e.getKey().getName(),
-              (String) e.getProperty("title"),
-              (String) e.getProperty("info"),
-              (Double) e.getProperty("latitude"),
-              (Double) e.getProperty("longitude"),
-              (String) e.getProperty("owner"),
-              (String) e.getProperty("otherConfirmedUsers"),
-              (String) e.getProperty("activity"),
-              (Date) e.getProperty("date"));
+      Objective td = parseEntityToObjective(e);
     }
 
     return tdList;
 
+  }
+
+  private Objective parseEntityToObjective(Entity e) {
+
+    String image = new String();
+    if(e.getProperty("image") != null) {
+      Blob b = (Blob) e.getProperty("image");
+      image = new String(b.getBytes());
+    }
+
+    String thumbnail = new String();
+    if(e.getProperty("thumbnail") != null) {
+      Blob b = (Blob) e.getProperty("thumbnail");
+      thumbnail = new String(b.getBytes());
+    }
+
+    Objective obj = new Objective(
+            e.getKey().getName(),
+            (String) e.getProperty("title"),
+            (String) e.getProperty("info"),
+            (Double) e.getProperty("latitude"),
+            (Double) e.getProperty("longitude"),
+            (String) e.getProperty("owner"),
+            (String) e.getProperty("otherConfirmedUsers"),
+            (String) e.getProperty("activity"),
+            thumbnail,
+            image,
+            (Date) e.getProperty("date"));
+
+    return obj;
   }
 }
 

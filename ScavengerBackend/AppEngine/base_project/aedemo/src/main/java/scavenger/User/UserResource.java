@@ -44,15 +44,19 @@ public class UserResource {
   @Produces({ MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
   @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
   public User addNewObjective(@FormParam("objectiveType") String objectiveType,
-                                   @FormParam("objectiveId") String objectiveId,
-                                   @Context HttpServletResponse servletResponse) throws IOException {
+                              @FormParam("objectiveId") String objectiveId,
+                              @Context HttpServletResponse servletResponse) throws IOException {
 
     System.out.println("objectiveType:" + objectiveType + ", objectiveId:" + objectiveId);
 
     User user = UserDatastoreConnector.getInstance().get(userid);
+    if(user == null) {
+      return null;
+    }
+
     Objective objectiveNew = ObjectiveDatastoreConnector.getInstance().get(objectiveId);
     if(objectiveNew == null) {
-      return user;
+      return null;
     }
 
     if(objectiveType.equals("locationObjective")) {

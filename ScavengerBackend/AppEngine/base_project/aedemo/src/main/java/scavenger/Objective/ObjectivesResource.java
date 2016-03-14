@@ -19,7 +19,7 @@ public class ObjectivesResource {
   @Context
   Request request;
 
-  // Return the list of filtered entities to applications
+  // Return the list of filtered entities to applications in JSON.
   // curl -H "Accept: application/json" -X GET http://127.0.0.1:8080/rest/ds
   @GET
   @Produces({ MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
@@ -30,71 +30,42 @@ public class ObjectivesResource {
                                              @QueryParam("longitude2") String longitude2,
                                              @QueryParam("maxLimit") String maxLimit){
 
+    List<Objective> objectivesList;
+
     if(latitude1 == null || longitude1 == null || latitude2 == null || longitude2 == null) {
-      return ObjectiveDatastoreConnector.getInstance().getRange();
+      objectivesList = ObjectiveDatastoreConnector.getInstance().getRange();
     } else {
-      return ObjectiveDatastoreConnector.getInstance().getRange(
+      objectivesList = ObjectiveDatastoreConnector.getInstance().getRange(
               new GPSCoordinate(Double.parseDouble(latitude1), Double.parseDouble(longitude1)),
               new GPSCoordinate(Double.parseDouble(latitude2), Double.parseDouble(longitude2)),
               maxLimit != null ? Integer.parseInt(maxLimit) : 100
       );
     }
-  }
 
-
-  // Add a new entity to the datastore. URL Encoding
-  // curl -H "Accept: application/json" -X POST --data "keyname=k&longitude=11.1&latitude=22.2" http://127.0.0.1:8080/rest/ds
-  @POST
-  @Produces({ MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
-  @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
-  public Objective newObjective(@FormParam("keyname") String keyname,
-                                @FormParam("title") String title,
-                                @FormParam("info") String info,
-                                @FormParam("latitude") String latitude,
-                                @FormParam("longitude") String longitude,
-                                @FormParam("owner") String owner,
-                                @FormParam("otherConfirmedUsers") String otherConfirmedUsers,
-                                @FormParam("activity") String activity,
-                                @Context HttpServletResponse servletResponse) throws IOException {
-
-    Date date = new Date();
-
-    // Store objective with latitude and longitude in database.
-    Objective loc = new Objective(keyname + date.getTime(),
-                                  title,
-                                  info,
-                                  latitude,
-                                  longitude,
-                                  owner,
-                                  otherConfirmedUsers,
-                                  activity,
-                                  date);
-    System.out.println("Posting new Objective: " + loc.toString());
-
-    if (loc.isCompletelyPopulated()) {
-      ObjectiveDatastoreConnector.getInstance().put(loc);
-      return loc;
-    } else {
-      System.out.println("Objective not stored -  at least one Parameter is missing.");
+    for(Objective o : objectivesList) {
+      o.setImage("<removed for size>");
     }
-
-    return null;
+    return objectivesList;
   }
 
-  // Add a new entity to the datastore. JSON Encoding
+  // Add a new entity to the datastore. Request has JSON body.
   // curl -H "Accept: application/json" -X POST --data "keyname=k&longitude=11.1&latitude=22.2" http://127.0.0.1:8080/rest/ds
   @POST
-  @Produces({ MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
-  @Consumes("application/json")
-  public Objective newObjective(final Objective loc) throws IOException {
+  @Produces(MediaType.APPLICATION_JSON)
+  @Consumes(MediaType.APPLICATION_JSON)
+  public Objective newObjective(final Objective objective) throws IOException {
 
-    loc.setDate(new Date());
-    loc.setKeyname(loc.getKeyname() + loc.getDate().getTime());
-    System.out.println("Posting new Objective: " + loc.toString());
+    objective.setDate(new Date());
+    objective.setKeyname(objective.getKeyname() + objective.getDate().getTime());
+    System.out.println("Posting new Objective: " + objective.toString());
 
-    if (loc.isCompletelyPopulated()) {
-      ObjectiveDatastoreConnector.getInstance().put(loc);
-      return loc;
+    if (objective.isCompletelyPopulated()) {
+      ObjectiveDatastoreConnector.getInstance().put(objective);
+
+      // Reduce Size!!
+      objective.setImage("<remove for size>");
+
+      return objective;
     } else {
       System.out.println("Objective not stored -  at least one Parameter is missing.");
     }
@@ -102,7 +73,6 @@ public class ObjectivesResource {
     return null;
   }
  
-  //The @PathParam annotation says that keyname can be inserted as parameter after this class's route /ds
   @Path("{keyname}")
   public scavenger.Objective.ObjectiveResource getEntity(@PathParam("keyname") String keyname) {
     System.out.println("GETting Objective for " + keyname);

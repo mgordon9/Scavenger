@@ -1,4 +1,6 @@
 package scavenger.Objective;
+import com.google.appengine.api.datastore.Blob;
+
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import java.io.Serializable;
@@ -26,6 +28,10 @@ public class Objective implements Serializable {
   @XmlElement public Boolean isVisitedVisual;
 
   @XmlElement public String activity;
+
+  @XmlElement public String thumbnail;
+  @XmlElement public String image;
+
   public Date date;
 
   public Objective() {
@@ -40,6 +46,8 @@ public class Objective implements Serializable {
                    String owner,
                    String otherConfirmedUsers,
                    String activity,
+                   String thumbnail,
+                   String image,
                    Date date) {
 
     this.keyname = keyname;
@@ -50,6 +58,8 @@ public class Objective implements Serializable {
     this.owner = owner;
     this.otherConfirmedUsers = otherConfirmedUsers;
     this.activity = activity;
+    this.thumbnail = thumbnail;
+    this.image = image;
     this.date = date;
   }
 
@@ -61,6 +71,8 @@ public class Objective implements Serializable {
                    String owner,
                    String otherConfirmedUsers,
                    String activity,
+                   String thumbnail,
+                   String image,
                    Date date) {
 
     this( keyname,
@@ -71,6 +83,8 @@ public class Objective implements Serializable {
           owner,
           otherConfirmedUsers,
           activity,
+          thumbnail,
+          image,
           date);
   }
 
@@ -111,6 +125,12 @@ public class Objective implements Serializable {
   public String getActivity() { return activity; }
   public void setActivity(String activity) { this.activity = activity; }
 
+  public String getThumbnail() { return thumbnail; }
+  public void setThumbnail(String thumbnail) { this.thumbnail = thumbnail; }
+
+  public String getImage() { return image; }
+  public void setImage(String image) { this.image = image; }
+
   public Date getDate() {
     return date;
   }
@@ -127,6 +147,8 @@ public class Objective implements Serializable {
             + this.owner + ", "
             + this.otherConfirmedUsers + ", "
             + this.activity + ", "
+            + (this.thumbnail != null) + ","
+            + (this.image != null) + ","
             + this.date;
   }
 
@@ -139,6 +161,8 @@ public class Objective implements Serializable {
             && this.owner != null
             && this.otherConfirmedUsers != null
             && this.activity != null
+//            && this.thumbnail != null
+//            && this.image != null
             && this.date != null;
   }
 }

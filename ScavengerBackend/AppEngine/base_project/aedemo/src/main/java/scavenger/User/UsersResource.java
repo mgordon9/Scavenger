@@ -20,30 +20,22 @@ public class UsersResource {
   @Context
   Request request;
 
-  // Return the list of filtered entities to applications
-  // curl -H "Accept: application/json" -X GET http://127.0.0.1:8080/rest/ds
-  @GET
-  @Produces({ MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
-  @Consumes({ MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
-  public User getUser(@QueryParam("userid") String userid){
 
-    return null;
-  }
-
-
-  // Add a new entity to the datastore. URL Encoding
+  // Add a new entity to the datastore. JSON Encoding of request body.
   // curl -H "Accept: application/json" -X POST --data "keyname=k&longitude=11.1&latitude=22.2" http://127.0.0.1:8080/rest/ds
   @POST
-  @Produces({ MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
-  @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
-  public User createUser(@FormParam("userid") String userid,
-                           @Context HttpServletResponse servletResponse) throws IOException {
+  @Produces(MediaType.APPLICATION_JSON)
+  @Consumes(MediaType.APPLICATION_JSON)
+  public User createUser(final User user) throws IOException {
 
-    User user = new User(userid,
-            0.0,
-            new HashSet<Objective>(),
-            new HashSet<Objective>());
+    User u = UserDatastoreConnector.getInstance().get(user.getUserid());
+    if(u != null) {
+      return u;
+    }
 
+    if(user.getScore() == null) {
+      user.setScore(0.0);
+    }
     UserDatastoreConnector.getInstance().put(user);
 
     return user;

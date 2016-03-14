@@ -25,6 +25,9 @@ public class User implements Serializable {
   @XmlElement public Set<Objective> locationObjectives;
   @XmlElement public Set<Objective> visualObjectives;
 
+  public User() {
+  }
+
   public User(String userid,
               Double score,
               Set<Objective> locationObjectives,
